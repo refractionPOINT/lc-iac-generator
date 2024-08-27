@@ -1,0 +1,213 @@
+# This template contains several sample D&R rules. Note, these rules are generic in nature
+# and are not a substitute for a robust collection of detection rules. 
+hives:
+    dr-general:
+        YARA Detection in Memory:
+            data:
+                detect:
+                    event: YARA_DETECTION
+                    op: and
+                    rules:
+                        - op: exists
+                          path: event/RULE_NAME
+                        - op: exists
+                          path: event/PROCESS/*
+                respond:
+                    - action: report
+                      name: YARA Detection in Memory - {{ .event.RULE_NAME }}
+                    - action: add tag
+                      tag: yara_detection_memory
+                      ttl: 80000
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watch sensor telemetry for a YARA detection affecting a process."
+        YARA Detection on Disk:
+            data:
+                detect:
+                    event: YARA_DETECTION
+                    op: and
+                    rules:
+                        - not: true
+                          op: exists
+                          path: event/PROCESS/*
+                        - op: exists
+                          path: event/RULE_NAME
+                respond:
+                    - action: report
+                      name: YARA Detection on Disk - {{ .event.RULE_NAME }}
+                    - action: add tag
+                      tag: yara_detection_disk
+                      ttl: 80000
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watch sensor telemetry for a YARA detection affecting a file on disk."
+        Defender Malware Alert:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: contains
+                          path: event/EVENT/System/Provider/Name
+                          value: Defender
+                        - op: or
+                          rules:
+                            - case sensitive: false
+                              op: is
+                              path: event/EVENT/System/EventID
+                              value: "1006"
+                            - case sensitive: false
+                              op: is
+                              path: event/EVENT/System/EventID
+                              value: "1007"
+                            - case sensitive: false
+                              op: is
+                              path: event/EVENT/System/EventID
+                              value: "1015"
+                            - case sensitive: false
+                              op: is
+                              path: event/EVENT/System/EventID
+                              value: "1116"
+                            - case sensitive: false
+                              op: is
+                              path: event/EVENT/System/EventID
+                              value: "1117"
+                            - case sensitive: false
+                              op: is
+                              path: event/EVENT/System/EventID
+                              value: "1118"
+                            - case sensitive: false
+                              op: is
+                              path: event/EVENT/System/EventID
+                              value: "1119"
+                            - case sensitive: false
+                              op: is
+                              path: event/EVENT/System/EventID
+                              value: "1120"
+                respond:
+                    - action: report
+                      name: Defender Malware Alert
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "MS Defender events of interest."
+        RDP from EXTERNAL IP:
+            data:
+                detect:
+                    event: NETWORK_CONNECTIONS
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/FILE_PATH
+                          value: C:\WINDOWS\System32\svchost.exe
+                        - op: contains
+                          path: event/COMMAND_LINE
+                          value: TermService
+                        - op: is
+                          path: event/NETWORK_ACTIVITY/DESTINATION/PORT
+                          value: 3389
+                        - op: is public address
+                          path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
+                respond:
+                    - action: report
+                      name: RDP from EXTERNAL IP - {{ index (index .event.NETWORK_ACTIVITY 0) "SOURCE" "IP_ADDRESS" }}
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watch for incoming RDP connections from the internet."
+        SSH from EXTERNAL IP:
+            data:
+                detect:
+                    event: NETWORK_CONNECTIONS
+                    op: and
+                    rules:
+                        - op: ends with
+                          path: event/FILE_PATH
+                          value: /sshd
+                        - op: is public address
+                          path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
+                        - cidr: 100.0.0.0/8
+                          not: true
+                          op: cidr
+                          path: event/NETWORK_ACTIVITY/SOURCE/IP_ADDRESS
+                respond:
+                    - action: report
+                      name: SSH from EXTERNAL IP - {{ index (index .event.NETWORK_ACTIVITY 0) "SOURCE" "IP_ADDRESS" }}
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watch for SSH connections from the internet."
+        Possible Windows Brute Force Activity:
+            data:
+                detect:
+                    event: WEL
+                    op: is windows
+                    with events:
+                        count: 5
+                        event: WEL
+                        op: is
+                        path: event/EVENT/System/EventID
+                        value: "4625"
+                        within: 60
+                respond:
+                    - action: report
+                      name: Possible Windows Brute Force Activity
+                      suppression:
+                        is_global: false
+                        keys:
+                            - '{{ .event.EVENT.EventData.IpAddress }}'
+                        max_count: 1
+                        period: 60s
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watch for more than 5 failed logons in a 60s period. Fire one alert per source IP every 60s."
+        NEW_DOCUMENT in Public directory:
+            data:
+                detect:
+                    event: NEW_DOCUMENT
+                    op: starts with
+                    path: event/FILE_PATH
+                    value: C:\Users\Public\
+                respond:
+                    - action: report
+                      name: NEW_DOCUMENT in Public directory - {{ .event.FILE_PATH }}
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watch for interesting files dropped in interesting locations."
+        Sensitive Process Accessed:
+            data:
+                detect:
+                    event: SENSITIVE_PROCESS_ACCESS
+                    op: and
+                    rules:
+                        - not: true
+                          op: is
+                          path: event/EVENTS/?/event/SOURCE/FILE_PATH
+                          value: C:\Windows\system32\MRT.exe
+                        - not: true
+                          op: ends with
+                          path: event/EVENTS/?/event/SOURCE/FILE_PATH
+                          value: system32\csrss.exe
+                        - not: true
+                          op: ends with
+                          path: event/EVENTS/?/event/SOURCE/FILE_PATH
+                          value: Windows\sysmon.exe
+                respond:
+                    - action: report
+                      name: Sensitive Process Accessed
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "This rule may need to be tuned for each specific environment. Add benign SOURCE processes which are known to access lsass."

@@ -1,0 +1,37 @@
+# This template adds a set of D&R rules which auto-tag systems based on observed behavior.
+hives:
+    dr-general:
+        Auto-Tag Web Servers:
+            data:
+                detect:
+                    events:
+                        - NEW_PROCESS
+                        - EXISTING_PROCESS
+                    op: matches
+                    path: event/FILE_PATH
+                    re: (apache|httpd|nginx|lighttpd|tomcat|java|w3wp|iisexpress|php-fpm|gunicorn|uwsgi)
+                respond:
+                    - action: add tag
+                      tag: webserver
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watch for common web server processes and tag the system accordingly."
+        Auto-Tag Domain Controllers:
+            data:
+                detect:
+                    events:
+                        - NEW_PROCESS
+                        - EXISTING_PROCESS
+                    op: contains
+                    path: event/FILE_PATH
+                    value: 'Microsoft.ActiveDirectory.WebServices.exe'
+                respond:
+                    - action: add tag
+                      tag: domain-controller
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watch for common domain controller process and tag the system accordingly."

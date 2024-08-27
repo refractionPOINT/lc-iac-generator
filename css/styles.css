@@ -1,0 +1,124 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+.app-version {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 14px;
+    color: #555;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+fieldset {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+legend {
+    font-weight: bold;
+}
+
+pre {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.multi-column {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; /* Adjust the gap as needed */
+}
+
+.multi-column label {
+    flex: 0 0 30%; /* Each item takes up 30% of the row */
+    max-width: 30%; /* Ensure that the item does not stretch beyond 30% */
+}
+
+@media (max-width: 800px) {
+    .multi-column label {
+        flex: 0 0 45%; /* 2 columns on smaller screens */
+        max-width: 45%;
+    }
+}
+
+@media (max-width: 500px) {
+    .multi-column label {
+        flex: 0 0 100%; /* 1 column on very small screens */
+        max-width: 100%;
+    }
+}
+
+.container {
+    margin: 20px auto;
+    max-width: 1200px;
+}
+
+.template-boundary {
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+}
+
+button {
+    background-color: #337ab7;
+    color: white !important;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #286090;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#copyButton {
+    margin-left: auto;
+    background-color: #337ab7;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#copyButton:hover {
+    background-color: #286090;
+}
+
+label, input {
+    font-weight: normal !important;
+}
+
+.select-all-container {
+    margin-bottom: 10px;
+}
+
+.select-all-container label {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+input[type="checkbox"] {
+    margin-right: 5px;
+}
+

@@ -1,0 +1,108 @@
+# This template demonstrates the powerful DFIR extensions available in LimaCharlie
+# and how platform automation allows extensions to work with one another.
+#
+# Read more about the automations unlocked by this template here: 
+# https://limacharlie.io/blog/automating-incident-response-workflows
+version: 3
+extensions:
+    - ext-infrastructure
+    - ext-plaso
+    - ext-velociraptor
+    - ext-artifact
+    - ext-hayabusa
+    - ext-reliable-tasking
+hives:
+    dr-general:
+        hayabusa-to-detections:
+            data:
+                detect:
+                    event: hayabusa_event
+                    op: and
+                    rules:
+                        - op: is
+                          path: routing/hostname
+                          value: ext-hayabusa
+                        - op: matches
+                          path: event/results/Level
+                          re: (med|high|crit)
+                respond:
+                    - action: report
+                      name: Hayabusa Detection - {{ .event.results.Level }} - {{ .event.results.message }} - {{ .event.results.Computer }}
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watches for incoming Hayabusa events and routes certain severities to LC detections stream. Read more: https://limacharlie.io/blog/automating-incident-response-workflows"
+        vr-to-hayabusa:
+            data:
+                detect:
+                    op: and
+                    rules:
+                        - op: is
+                          path: routing/log_type
+                          value: velociraptor
+                        - not: true
+                          op: is
+                          path: routing/event_type
+                          value: export_complete
+                    target: artifact_event
+                respond:
+                    - action: extension request
+                      extension action: generate
+                      extension name: ext-hayabusa
+                      extension request:
+                        artifact_id: '{{ .routing.log_id }}'
+                        min_rule_level: '{{ "informational" }}'
+                        profile: '{{ "timesketch-verbose" }}'
+                        send_to_timeline: true
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Sends Velociraptor acquisitions to Hayabusa for processing (will extract and parse EVTX only). Read more: https://limacharlie.io/blog/automating-incident-response-workflows"
+        vr-to-plaso:
+            data:
+                detect:
+                    op: and
+                    rules:
+                        - op: is
+                          path: routing/log_type
+                          value: velociraptor
+                        - not: true
+                          op: is
+                          path: routing/event_type
+                          value: export_complete
+                    target: artifact_event
+                respond:
+                    - action: extension request
+                      extension action: generate
+                      extension name: ext-plaso
+                      extension request:
+                        artifact_id: '{{ .routing.log_id }}'
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Sends Velociraptor acquisitions to Plaso for processing. Will produce forensic timelines from the acquired raw evidence. Read more: https://limacharlie.io/blog/automating-incident-response-workflows"
+        wel-to-hayabusa:
+            data:
+                detect:
+                    artifact type: wel
+                    event: ingest
+                    op: exists
+                    path: /
+                    target: artifact_event
+                respond:
+                    - action: extension request
+                      extension action: generate
+                      extension name: ext-hayabusa
+                      extension request:
+                        artifact_id: '{{ .routing.log_id }}'
+                        min_rule_level: '{{ "informational" }}'
+                        profile: '{{ "timesketch-verbose" }}'
+                        send_to_timeline: true
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Sends all uploaded WEL artifacts (acquired EVTX files) and sends to Hayabusa for processing. Read more: https://limacharlie.io/blog/automating-incident-response-workflows"

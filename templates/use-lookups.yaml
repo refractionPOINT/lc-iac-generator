@@ -1,0 +1,147 @@
+# This template enables a few of the builtin IOC Lookups available in LC
+# and implements D&R rules to utilize them.
+version: 3
+extensions:
+    - loldrivers
+resources:
+    lookup:
+        - crimeware-ips
+        - talos-ip-blacklist
+        - ransomware-domains
+        - tor-ips
+        - linux-malware-hashes
+        - zeus-bad-domains
+        - zeus-bad-ips
+hives:
+    dr-general:
+        Talos IP Blacklist Hit:
+            data:
+                detect:
+                    event: NETWORK_CONNECTIONS
+                    op: lookup
+                    path: event/NETWORK_ACTIVITY/?/IP_ADDRESS
+                    resource: lcr://lookup/talos-ip-blacklist
+                respond:
+                    - action: report
+                      name: Talos IP Blacklist Hit
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+        Crimeware IP Lookup:
+            data:
+                detect:
+                    event: NETWORK_CONNECTIONS
+                    op: lookup
+                    path: event/NETWORK_ACTIVITY/?/IP_ADDRESS
+                    resource: lcr://lookup/crimeware-ips
+                respond:
+                    - action: report
+                      name: IP address found in Crimeware IPs lookup
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+        Ransomware Domain Lookup:
+            data:
+                detect:
+                    event: DNS_REQUEST
+                    op: lookup
+                    path: event/DOMAIN_NAME
+                    resource: lcr://lookup/ransomware-domains
+                respond:
+                    - action: report
+                      name: Domain Name found in Ransomware Domains lookup
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+        Zeus Domain Lookup:
+            data:
+                detect:
+                    event: DNS_REQUEST
+                    op: lookup
+                    path: event/DOMAIN_NAME
+                    resource: lcr://lookup/zeus-bad-domains
+                respond:
+                    - action: report
+                      name: Domain Name found in Zeus Bad Domains lookup
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+        Zeus IP Lookup:
+            data:
+                detect:
+                    event: NETWORK_CONNECTIONS
+                    op: lookup
+                    path: event/NETWORK_ACTIVITY/?/IP_ADDRESS
+                    resource: lcr://lookup/zeus-bad-ips
+                respond:
+                    - action: report
+                      name: IP address found in Zeus IPs lookup
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+        TOR IP Lookup:
+            data:
+                detect:
+                    event: NETWORK_CONNECTIONS
+                    op: lookup
+                    path: event/NETWORK_ACTIVITY/?/IP_ADDRESS
+                    resource: lcr://lookup/tor-ips
+                respond:
+                    - action: report
+                      name: IP address found in TOR IPs lookup
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+        Linux Malware Hashes lookup:
+            data:
+                detect:
+                    events:
+                        - NEW_PROCESS
+                        - EXISTING_PROCESS
+                        - CODE_IDENTITY
+                    op: and
+                    rules:
+                        - name: linux
+                          op: is platform
+                        - op: lookup
+                          path: event/HASH
+                          resource: lcr://lookup/linux-malware-hashes
+                respond:
+                    - action: report
+                      name: Hash found on Linux Malware Hashes lookup
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+        LOLDriver Detected:
+            data:
+                detect:
+                    event: CODE_IDENTITY
+                    op: lookup
+                    path: event/HASH
+                    resource: hive://lookup/loldrivers
+                respond:
+                    - action: report
+                      name: LOLDriver Detected
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+    lookup:
+        loldrivers:
+            usr_mtd:
+                enabled: true

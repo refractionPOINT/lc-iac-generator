@@ -1,0 +1,27 @@
+# These rules provide informational alerts about various activities across endpoints.
+# Consider these rules to be potentially high volume and not generally actionable,
+# but may still provide interesting insights into activities within an organization.
+version: 3
+hives:
+    dr-general:
+        'INFORMATIONAL: RDP Connection':
+            data:
+                detect:
+                    events:
+                        - WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "4778"
+                        - op: contains
+                          path: event/EVENT/EventData/SessionName
+                          value: RDP
+                respond:
+                    - action: report
+                      name: 'RDP Connection from IP: {{ .event.EVENT.EventData.ClientAddress }} - Hostname: {{ .event.EVENT.EventData.ClientName }} - User: {{ .event.EVENT.EventData.AccountName }}'
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Gain visibility over where RDP is being used in an org."

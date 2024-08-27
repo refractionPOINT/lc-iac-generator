@@ -1,0 +1,40 @@
+# This template enables live streaming of several Windows Event Log channels.
+# When collected this way, the Windows Events will stream to the Sensor timeline
+# alongside the standard EDR telemetry.
+#
+# NOTE: This template will overwrite any other template which also sets a config
+# for extension_config/ext-artifact, such as the wel-acquire template. If you want both,
+# you must merge them and apply them together.
+version: 3
+extensions:
+  - ext-artifact
+hives:
+  extension_config:
+    ext-artifact:
+      data:
+        log_rules:
+          windows-wel-streaming:
+            days_retention: 30
+            filters:
+                platforms:
+                    - windows
+            is_delete_after: false
+            is_ignore_cert: true
+            patterns:
+              - wel://application:*
+              - wel://security:*
+              - wel://system:*
+              - wel://Microsoft-Windows-PowerShell/Operational:*
+              - wel://Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational:*
+              - wel://Microsoft-Windows-Sysmon/Operational:*
+              - wel://Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational:*
+              - wel://Microsoft-Windows-Windows Defender/Operational:*
+              - wel://Microsoft-Windows-WMI-Activity/Operational:*
+              - wel://Microsoft-Windows-Security-Mitigations/KernelMode:*
+              - wel://Directory Service:*
+              - wel://DFS Replication:*
+              - wel://Active Directory Web Services:*
+            usr_mtd:
+              enabled: true
+              expiry: 0
+              comment: 'This will stream Windows Event Logs into the sensor timeline in real-time.'

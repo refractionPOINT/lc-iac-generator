@@ -1,0 +1,28 @@
+# This template automatically 
+# - enables the LOLDrivers extension
+# - turns on the lookup
+# - creates a D&R rule to alert on matches found in CODE_IDENTITY events
+version: 3
+extensions:
+    - loldrivers
+hives:
+    dr-general:
+        LOLDriver Detected:
+            data:
+                detect:
+                    event: CODE_IDENTITY
+                    op: lookup
+                    path: event/HASH
+                    resource: hive://lookup/loldrivers
+                respond:
+                    - action: report
+                      name: LOLDriver Detected
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Check hashes against lookup."
+    lookup:
+        loldrivers:
+            usr_mtd:
+                enabled: true

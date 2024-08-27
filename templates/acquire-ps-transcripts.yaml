@@ -1,0 +1,55 @@
+# This template leverages File Integrity Monitoring to trigger events when a
+# PowerShell transcript is modified. A D&R rule watches for this and triggers
+# a sensor command to retrieve the transcript 60 seconds after the modification occurs.
+# Acquired transcripts will be uploaded as artifacts and retained for 30 days.
+# It is worth noting that PS Transcripts can sometimes appear outside of the file path pattern
+# provided.
+version: 3
+extensions:
+  - ext-artifact
+  - ext-integrity
+hives:
+  extension_config:
+    ext-integrity:
+        data:
+            fim_rules:
+            powershell-transcripts:
+                filters:
+                platforms:
+                    - windows
+                patterns:
+                - '?:\Users\*\Documents\*\PowerShell_transcript*'
+        usr_mtd:
+            enabled: true
+            expiry: 0
+            tags: []
+            comment: "Watch for changes to PowerShell transcripts in their most common location."
+  dr-general:
+    Collect PowerShell Transcripts:
+      data:
+        detect:
+          event: FIM_HIT
+          op: and
+          rules:
+            - op: contains
+              path: event/FILE_PATH
+              value: PowerShell_transcript
+            - op: is
+              path: event/ACTION
+              value: modified
+        respond:
+          - action: wait
+            duration: 60s
+          - action: task
+            command: artifact_get --file '{{ .event.FILE_PATH }}' --days-retention 30
+            suppression:
+              is_global: false
+              keys:
+                - '{{ .event.FILE_PATH }}'
+              max_count: 1
+              period: 60s
+      usr_mtd:
+        enabled: true
+        expiry: 0
+        tags: []
+        comment: 'This rule watches for a transcript to be modified, then acquires it after 60s.'

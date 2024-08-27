@@ -1,0 +1,141 @@
+# This template implements several things to immediately leverage a free YARA ruleset
+# - enables YARA related extensions
+# - subscribes to the Elastic Protection YARA Rules on Github
+#   - https://github.com/elastic/protections-artifacts/tree/main/yara/rules
+# - enables background scanning of endpoints using the Elastic ruleset
+# - enables a series of relevant D&R rules for leveraging YARA against files and processes
+#
+# WARNING: This will overwrite any existing YARA SCANNERS you have configured.
+#
+version: 3
+extensions:
+    - ext-yara
+    - ext-yara-manager
+hives:
+    extension_config:
+        ext-yara:
+            data:
+                yara_scanners:
+                    elastic-yara-rules:
+                        filters:
+                            platforms:
+                                - windows
+                                - linux
+                                - macos
+                        sources:
+                            - elastic-yara-rules
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Enable background YARA scanner on all OSes using the Elastic ruleset."
+        ext-yara-manager:
+            data:
+                yara_manager_rules:
+                    - arl: ""
+                      name: elastic-yara-rules
+                      predefined: '[github,elastic/protections-artifacts/yara/rules]'
+                      split: false
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Subscribe to the Elastic YARA ruleset from Github. Will sync automatically every 24h."
+    dr-general:
+        YARA Detection in Memory:
+            data:
+                detect:
+                    event: YARA_DETECTION
+                    op: and
+                    rules:
+                        - op: exists
+                          path: event/RULE_NAME
+                        - op: exists
+                          path: event/PROCESS/*
+                respond:
+                    - action: report
+                      name: YARA Detection in Memory - {{ .event.RULE_NAME }}
+                    - action: add tag
+                      tag: yara_detection_memory
+                      ttl: 80000
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watch sensor telemetry for a YARA detection affecting a process."
+        YARA Detection on Disk:
+            data:
+                detect:
+                    event: YARA_DETECTION
+                    op: and
+                    rules:
+                        - not: true
+                          op: exists
+                          path: event/PROCESS/*
+                        - op: exists
+                          path: event/RULE_NAME
+                respond:
+                    - action: report
+                      name: YARA Detection on Disk - {{ .event.RULE_NAME }}
+                    - action: add tag
+                      tag: yara_detection_disk
+                      ttl: 80000
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Watch sensor telemetry for a YARA detection affecting a file on disk."
+        Yara Scan Interesting File:
+            data:
+                detect:
+                    event: NEW_DOCUMENT
+                    op: and
+                    rules:
+                        - case sensitive: false
+                          op: matches
+                          path: event/FILE_PATH
+                          re: ^C:\\Users\\[^\\]+\\(Downloads|Desktop|Documents|AppData\\Local\\Temp)|^C:\\Windows\\Temp
+                respond:
+                    - action: task
+                      command: yara_scan hive://yara/elastic-yara-rules -f "{{ .event.FILE_PATH }}"
+                      investigation: Yara Scan File
+                      suppression:
+                        is_global: false
+                        keys:
+                            - '{{ .event.FILE_PATH }}'
+                            - Yara Scan File
+                        max_count: 1
+                        period: 1m
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "YARA Scan interesting files in interesting locations. Suppress so that we only scan the same file path once per minute."
+        Yara Scan Interesting Process:
+            data:
+                detect:
+                    event: NEW_PROCESS
+                    op: or
+                    rules:
+                        - op: starts with
+                          path: event/FILE_PATH
+                          value: C:\Users\
+                        - op: contains
+                          path: event/FILE_PATH
+                          value: \Temp\
+                respond:
+                    - action: task
+                      command: yara_scan hive://yara/elastic-yara-rules --pid "{{ .event.PROCESS_ID }}"
+                      investigation: Yara Scan Process
+                      suppression:
+                        is_global: false
+                        keys:
+                            - '{{ .event.PROCESS_ID }}'
+                            - Yara Scan Process
+                        max_count: 1
+                        period: 1m
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "YARA Scan interesting processes launched from interesting locations. Suppress so that we only scan the same PID once per minute."
