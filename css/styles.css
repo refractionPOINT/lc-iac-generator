@@ -122,3 +122,17 @@ input[type="checkbox"] {
     margin-right: 5px;
 }
 
+.auto-enabled-icon {
+    color: #1100ff;
+    margin-left: 5px;
+    display: none;
+    cursor: pointer;
+}
+
+label[disabled] .auto-enabled-icon {
+    display: inline-block;
+}
+
+label[disabled] {
+    cursor: not-allowed;
+}
