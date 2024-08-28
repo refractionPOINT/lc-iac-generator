@@ -34,16 +34,25 @@
 
         <!-- Navigation Tabs -->
         <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#preconfigured">Preconfigured Templates</a></li>
+            <li class="active"><a data-toggle="tab" href="#about">About</a></li>
+            <li><a data-toggle="tab" href="#preconfigured">Preconfigured Templates</a></li>
             <li><a data-toggle="tab" href="#api-resources">API Resources</a></li>
             <li><a data-toggle="tab" href="#lookup-resources">Lookup Resources</a></li>
             <li><a data-toggle="tab" href="#extensions">Extensions</a></li>
             <li><a data-toggle="tab" href="#artifact-collection">Artifact Collection</a></li>
-            <li><a data-toggle="tab" href="#about">About</a></li>
         </ul>
 
         <form id="yamlForm">
             <div class="tab-content">
+                <!-- About Tab -->
+                <div id="about" class="tab-pane fade in active">
+                    <fieldset>
+                        <legend>About</legend>
+                        <div id="about-content">
+                            <!-- README.md content will be injected here -->
+                        </div>
+                    </fieldset>
+                </div>
                 <!-- Preconfigured Templates Tab -->
                 <!-- How to contribute a template
                     To add a new Preconfigured Template:
@@ -57,7 +66,7 @@
                             b. Do the required add-ons get enabled on their corresponding tabs?
                             c. etc.
                 -->
-                <div id="preconfigured" class="tab-pane fade in active">
+                <div id="preconfigured" class="tab-pane fade">
                     <fieldset>
                         <legend>Preconfigured Templates</legend>
                         <div>
@@ -512,18 +521,8 @@
                         </fieldset>
                     </fieldset>
                 </div>
-                <!-- About Tab -->
-                <div id="about" class="tab-pane fade">
-                    <fieldset>
-                        <legend>About</legend>
-                        <div id="about-content">
-                            <!-- README.md content will be injected here -->
-                        </div>
-                    </fieldset>
-                </div>
-
                 <!-- YAML Output Block -->
-                <div class="template-boundary">
+                <div id="yamlOutputSection" class="template-boundary">
                     <h2>Infrastructure-as-Code Template:</h2>
                     <div class="button-container">
                         <button type="button" onclick="resetForm()">Reset Template</button>
