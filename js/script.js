@@ -41,6 +41,7 @@ async function generateYAML() {
     if (hasArtifactSelection) {
         if (extArtifactCheckbox && !extArtifactCheckbox.checked) {
             extArtifactCheckbox.checked = true;
+            markAutoEnabledCheckbox(extArtifactCheckbox);
         }
         hives['extension_config'] = {
             'ext-artifact': {
@@ -147,6 +148,7 @@ async function applyTemplate(templateFilePath) {
                 const checkbox = document.querySelector(`input[name="api"][value="${apiResource}"]`);
                 if (checkbox && !checkbox.checked) {
                     checkbox.checked = true;
+                    markAutoEnabledCheckbox(checkbox);
                 }
             });
         }
@@ -156,6 +158,7 @@ async function applyTemplate(templateFilePath) {
                 const checkbox = document.querySelector(`input[name="lookup"][value="${lookupResource}"]`);
                 if (checkbox && !checkbox.checked) {
                     checkbox.checked = true;
+                    markAutoEnabledCheckbox(checkbox);
                 }
             });
         }
@@ -165,6 +168,7 @@ async function applyTemplate(templateFilePath) {
                 const checkbox = document.querySelector(`input[name="extensions"][value="${extension}"]`);
                 if (checkbox && !checkbox.checked) {
                     checkbox.checked = true;
+                    markAutoEnabledCheckbox(checkbox);
                 }
             });
         }
@@ -185,6 +189,7 @@ async function removeTemplate(templateFilePath) {
                 const checkbox = document.querySelector(`input[name="api"][value="${apiResource}"]`);
                 if (checkbox && checkbox.checked) {
                     checkbox.checked = false;
+                    clearAutoEnabledCheckbox(checkbox);
                 }
             });
         }
@@ -194,6 +199,7 @@ async function removeTemplate(templateFilePath) {
                 const checkbox = document.querySelector(`input[name="lookup"][value="${lookupResource}"]`);
                 if (checkbox && checkbox.checked) {
                     checkbox.checked = false;
+                    clearAutoEnabledCheckbox(checkbox);
                 }
             });
         }
@@ -203,6 +209,7 @@ async function removeTemplate(templateFilePath) {
                 const checkbox = document.querySelector(`input[name="extensions"][value="${extension}"]`);
                 if (checkbox && checkbox.checked) {
                     checkbox.checked = false;
+                    clearAutoEnabledCheckbox(checkbox);
                 }
             });
         }
@@ -438,6 +445,7 @@ function initializeListeners() {
 
         if (!isAnyArtifactEnabled) {
             extArtifactCheckbox.checked = false;
+            clearAutoEnabledCheckbox(extArtifactCheckbox);
             generateYAML(); // Update YAML to reflect the change
         }
     }
@@ -485,6 +493,7 @@ function initializeListeners() {
 function resetForm() {
     document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
         checkbox.checked = false;
+        clearAutoEnabledCheckbox(checkbox);
     });
     
     document.getElementById('yamlOutput').innerText = jsyaml.dump(currentYAMLState, { skipInvalid: true });
@@ -554,6 +563,27 @@ function loadReadme() {
             const aboutContent = document.getElementById('about-content');
             aboutContent.innerHTML = '<p>Error loading content.</p>';
         });
+}
+function markAutoEnabledCheckbox(checkbox) {
+    const label = checkbox.closest('label');
+    if (label) {
+        // Disable the checkbox and add the auto-enabled class
+        checkbox.disabled = true;
+        label.setAttribute('disabled', 'true');
+        label.insertAdjacentHTML('beforeend', ' <i class="fas fa-info-circle auto-enabled-icon" title="This option has been enabled by another selection and cannot be disabled."></i>');
+    }
+}
+function clearAutoEnabledCheckbox(checkbox) {
+    const label = checkbox.closest('label');
+    if (label) {
+        // Enable the checkbox and remove the auto-enabled class
+        checkbox.disabled = false;
+        label.removeAttribute('disabled');
+        const icon = label.querySelector('.auto-enabled-icon');
+        if (icon) {
+            icon.remove();
+        }
+    }
 }
 // end general functions
 
