@@ -7,6 +7,7 @@ The LimaCharlie Infrastructure-as-Code (IaC) Generator allows users to select va
 For more information on how to apply IaC configurations to an LC org, read about the infrastructure extension [here](https://docs.limacharlie.io/docs/extensions-lc-extensions-infrastructure).
 
 App URL: https://iac.limacharlie.io/
+
 Repo URL: https://github.com/refractionPOINT/lc-iac-generator/
 
 ### Disclaimer / Important Considerations

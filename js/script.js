@@ -482,13 +482,6 @@ function initializeListeners() {
             });
         });
     });
-
-    // about page
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        if (e.target.hash === '#about') {
-            loadReadme();
-        }
-    });
 }
 function resetForm() {
     document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
@@ -596,4 +589,21 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeListeners();
     Prism.highlightAll();
     generateYAML();
+
+    // Check if the 'About' tab is active and load the content
+    const aboutTab = document.querySelector('li.active a[href="#about"]');
+    if (aboutTab) {
+        loadReadme();
+        document.getElementById('yamlOutputSection').style.display = 'none'; // Hide YAML Output Block
+    }
+
+    // Add event listener for tab changes to show/hide the YAML Output Block
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        if (e.target.hash === '#about') {
+            loadReadme();
+            document.getElementById('yamlOutputSection').style.display = 'none'; // Hide YAML Output Block
+        } else {
+            document.getElementById('yamlOutputSection').style.display = 'block'; // Show YAML Output Block
+        }
+    });
 });
