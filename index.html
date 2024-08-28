@@ -30,6 +30,8 @@
         <div class="app-version"></div>
         <h1>LimaCharlie IaC Generator</h1>
 
+        <!-- To contribute, read the tips in the corresponding sections below -->
+
         <!-- Navigation Tabs -->
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#preconfigured">Preconfigured Templates</a></li>
@@ -43,6 +45,18 @@
         <form id="yamlForm">
             <div class="tab-content">
                 <!-- Preconfigured Templates Tab -->
+                <!-- How to contribute a template
+                    To add a new Preconfigured Template:
+                        1. First place your new template in ./templates/
+                            a. Ensure your template is self-describing using # Comments above the actual YAML. This is how the hoverover description is generated.
+                            b. Make sure your YAML is valid: https://www.yamllint.com/
+                            c. Make sure your template includes any required extensions/add-ons required for its functionality.
+                        2. Within the <div class="multi-column"> section below, copy an existing code block and paste it after the existing ones. Tweak it to match your new template.
+                        3. In your own dev environment, test that the app properly merges/unmerges your template without issue.
+                            a. Does the hoverover description populate?
+                            b. Do the required add-ons get enabled on their corresponding tabs?
+                            c. etc.
+                -->
                 <div id="preconfigured" class="tab-pane fade in active">
                     <fieldset>
                         <legend>Preconfigured Templates</legend>
@@ -156,6 +170,11 @@
                     </fieldset>
                 </div>
                 <!-- API Resources Tab -->
+                <!-- How to contribute new API resource
+                        1. Simply copy/paste a new code section from the list below.
+                        2. Set the "title" to match the text at the end of the line.
+                        3. Ensure the "value" matches exactly the YAML object that should be inserted into the generated YAML.
+                -->
                 <div id="api-resources" class="tab-pane fade">
                     <fieldset>
                     <legend>API Resources</legend>
@@ -181,6 +200,11 @@
                     </fieldset>
                 </div>
                 <!-- Lookup Resources Tab -->
+                <!-- How to contribute new Lookup resource
+                        1. Simply copy/paste a new code section from the list below.
+                        2. Set the "label title" to match the text at the end of the line.
+                        3. Ensure the "value" matches exactly the YAML object that should be inserted into the generated YAML.
+                -->
                 <div id="lookup-resources" class="tab-pane fade">
                     <fieldset>
                         <legend>Lookup Resources</legend>
@@ -291,6 +315,11 @@
                     </fieldset>
                 </div>
                 <!-- Extensions Tab -->
+                <!-- How to contribute new Extension
+                        1. Simply copy/paste a new code section from the list below.
+                        2. Set the "label title" to match the text at the end of the line, omitting the word "Extension" from the text at the end.
+                        3. Ensure the "value" matches exactly the YAML object that should be inserted into the generated YAML.
+                -->
                 <div id="extensions" class="tab-pane fade">
                     <fieldset>
                         <legend>Extensions</legend>
@@ -377,6 +406,11 @@
                     </fieldset>
                 </div>
                 <!-- Artifact Collection Tab -->
+                <!-- How to contribute new Artifact Collection configuration
+                        1. Determine if your pattern fits in one of the existing categories. If so, add the pattern to the existing category.
+                        2. If you have an entirely new category, replicate the existing structure of a category with its patterns.
+                        3. In your own dev environment, test your new artifact collection to ensure the patterns are added and removed as expected.
+                -->
                 <div id="artifact-collection" class="tab-pane fade">
                     <fieldset>
                         <legend>Artifact Collection</legend>
