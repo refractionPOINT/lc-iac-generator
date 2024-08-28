@@ -493,6 +493,7 @@ function initializeListeners() {
 function resetForm() {
     document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
         checkbox.checked = false;
+        clearAutoEnabledCheckbox(checkbox);
     });
     
     document.getElementById('yamlOutput').innerText = jsyaml.dump(currentYAMLState, { skipInvalid: true });
