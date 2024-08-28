@@ -13,12 +13,12 @@ hives:
     ext-integrity:
         data:
             fim_rules:
-            powershell-transcripts:
-                filters:
-                platforms:
-                    - windows
-                patterns:
-                - '?:\Users\*\Documents\*\PowerShell_transcript*'
+              powershell-transcripts:
+                  filters:
+                    platforms:
+                      - windows
+                  patterns:
+                    - '?:\Users\*\Documents\*\PowerShell_transcript*'
         usr_mtd:
             enabled: true
             expiry: 0
