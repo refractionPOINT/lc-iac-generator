@@ -1,5 +1,5 @@
 // app versioning
-const version = '1.0.1';
+const version = '1.1.1';
 
 // begin yaml generation
 let currentYAMLState = {}; // Store the current state of the YAML
