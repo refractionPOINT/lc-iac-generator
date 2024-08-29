@@ -14,7 +14,7 @@ Repo URL: https://github.com/refractionPOINT/lc-iac-generator/
 
 - The LimaCharlie IaC Generator is designed to inspire and demonstrate the possibilities of Infrastructure-as-Code configurations for cybersecurity platforms. While it provides a range of templates and options for creating detection and response rules, it is not intended to replace a comprehensive and thorough collection of detection rules. Users should conduct their own assessments and testing to ensure that any configurations meet their specific security needs and standards. Always combine these configurations with a robust security strategy and additional custom rules tailored to your environment.
 
-- It is also important to note that some of these configuration items may incur cost. You should carefully read about these add-ons before enabling at scale.
+- It is also important to note that some of these configuration items may incur cost. You should carefully [read about these add-ons](https://app.limacharlie.io/add-ons/) before enabling at scale.
 
 - Finally, know that while applying an IaC is generally an "additive" process, meaning the new configuration is typically merged with your existing config, there are exceptions to this. Some hives such as specific extension configurations may be overwritten if a new configuration is applied. For this reason, it is advised to always backup your existing configuration and verify changes after applying a new one.
 
