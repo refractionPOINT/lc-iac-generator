@@ -2,7 +2,7 @@
 
 ## Overview
 
-The LimaCharlie Infrastructure-as-Code (IaC) Generator allows users to select various configurations and automatically generate YAML templates for LimaCharlie deployments. The interface includes several tabs for different configuration categories, each allowing users to select specific options. The YAML is generated live as options are toggle in the UI.
+The LimaCharlie Infrastructure-as-Code (IaC) Generator allows users to select various configurations and automatically generate YAML templates for LimaCharlie deployments. The interface includes several tabs for different configuration categories, each allowing users to select specific options. The YAML is generated live as options are toggled in the UI.
 
 For more information on how to apply IaC configurations to an LC org, read about the infrastructure extension [here](https://docs.limacharlie.io/docs/extensions-lc-extensions-infrastructure).
 
@@ -49,6 +49,13 @@ Repo URL: https://github.com/refractionPOINT/lc-iac-generator/
 - This tab allows users to configure artifact collection settings for different operating systems using a list of predefined artifact patterns.
 - Users can specify settings like `Days Retention`, `Delete After Upload`, and `Ignore Cert Validation`.
 - For each OS, users can select specific log files or streams to include in the configuration.
+
+### User Inputs Tab
+
+- The User Inputs tab dynamically displays input fields based on the options selected in other tabs (API Resources, Extensions, etc.).
+- When a user selects an option that requires additional data, such as an API key or integration key, the necessary input fields are automatically shown in this tab.
+- Each input field is labeled with a description indicating what data is required. For example, selecting the "VirusTotal" API will prompt for a "VirusTotal API Key".
+- The badge on the "User Inputs" tab indicates the number of required fields that are currently empty, drawing attention to inputs that still need to be filled in.
 
 ## Conclusion
 

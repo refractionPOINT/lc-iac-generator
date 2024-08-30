@@ -136,3 +136,60 @@ label[disabled] .auto-enabled-icon {
 label[disabled] {
     cursor: not-allowed;
 }
+
+/* Highlight empty input fields */
+.highlight-empty {
+    border: 2px solid red; /* Change the border color to red */
+    background-color: #ffe6e6; /* Light red background for better visibility */
+}
+
+/* Badge styles to make it more attention-grabbing */
+.attention-badge {
+    background-color: #ff4d4d; /* Bright red background color */
+    color: #ffffff; /* White text color */
+    font-weight: bold; /* Bold text */
+    border-radius: 50%; /* Circular shape */
+    padding: 5px 10px; /* Adjust padding for size */
+    font-size: 14px; /* Larger font size for visibility */
+    animation: pulse 1s infinite; /* Animation for pulsing effect */
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.5); /* Subtle shadow for depth */
+}
+
+/* Pulsing animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(255, 77, 77, 0.7);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(255, 77, 77, 0.5);
+    }
+}
+
+/* Toast styles */
+.toast {
+    background-color: #333; /* Dark background */
+    color: #fff; /* White text */
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    opacity: 0.9;
+    margin-bottom: 10px;
+    font-size: 14px;
+    max-width: 300px;
+    animation: fadeInOut 6s; /* Changed duration to 6 seconds */
+}
+
+/* Fade-in and fade-out animation */
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 0.9; }
+    90% { opacity: 0.9; }
+    100% { opacity: 0; }
+}
+

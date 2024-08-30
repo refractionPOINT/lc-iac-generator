@@ -1,8 +1,9 @@
-// app versioning
-const version = '1.1.1';
+// app versioning - https://semver.org/
+const version = '1.2.1';
 
 // begin yaml generation
 let currentYAMLState = {}; // Store the current state of the YAML
+//// main function for generating YAML output
 async function generateYAML() {
     if (!validateInput()) {
         return;
@@ -17,6 +18,18 @@ async function generateYAML() {
     let hives = {};
     let hasArtifactSelection = false;
 
+    // Capture selected APIs and extensions
+    document.querySelectorAll('input[name="api"]:checked').forEach((checkbox) => {
+        apiResources.push(checkbox.value);  // This adds each checked API to the apiResources array
+    });
+
+    document.querySelectorAll('input[name="lookup"]:checked').forEach((checkbox) => {
+        lookupResources.push(checkbox.value);
+    });
+
+    document.querySelectorAll('input[name="extensions"]:checked').forEach((checkbox) => {
+        extensions.push(checkbox.value);
+    });
 
     // collect artifacts
     const artifactCollection = {};
@@ -65,18 +78,41 @@ async function generateYAML() {
         }
     }
 
-    document.querySelectorAll('input[name="api"]:checked').forEach((checkbox) => {
-        apiResources.push(checkbox.value);
-    });
+     // Handle user inputs dynamically using user-inputs attribute
+     const inputFields = document.querySelectorAll('#user-input-fields input[type="text"]');
 
-    document.querySelectorAll('input[name="lookup"]:checked').forEach((checkbox) => {
-        lookupResources.push(checkbox.value);
-    });
+     inputFields.forEach(inputField => {
+         const inputValue = inputField.value.trim();
+         if (inputValue !== '') {
+             // Find the corresponding checkbox with the same input ID
+             const checkbox = Array.from(document.querySelectorAll('input[type="checkbox"]')).find(chk =>
+                 chk.getAttribute('user-inputs') && JSON.parse(chk.getAttribute('user-inputs')).some(cfg => cfg.id === inputField.id)
+             );
+ 
+             if (checkbox) {
+                 const inputConfig = JSON.parse(checkbox.getAttribute('user-inputs')).find(cfg => cfg.id === inputField.id);
+                 const path = inputConfig.path;
+ 
+                 // Use a helper function to set the value at the specified path
+                 setYAMLValueByPath(currentYAMLState, path, inputValue);
+             }
+         }
+     });
+ 
+    // Handle values and additional settings in YAML
+    document.querySelectorAll('input[type="checkbox"]:checked[user-inputs]').forEach(checkbox => {
+        const userInputConfig = checkbox.getAttribute('user-inputs');
+        if (userInputConfig) {
+            const inputConfigs = JSON.parse(userInputConfig);
 
-    document.querySelectorAll('input[name="extensions"]:checked').forEach((checkbox) => {
-        extensions.push(checkbox.value);
+            inputConfigs.forEach(config => {
+                if (config.value !== undefined) {
+                    setYAMLValueByPath(currentYAMLState, config.path, config.value);
+                }
+            });
+        }
     });
-
+    
     // Merge current resources and extensions instead of resetting currentYAMLState
     const yamlObject = { ...currentYAMLState, version: 3 }; // Start with existing state
 
@@ -98,6 +134,8 @@ async function generateYAML() {
         yamlObject.hives = { ...yamlObject.hives, ...hives }; // Merge hives
     }
 
+
+
     currentYAMLState = { ...yamlObject }; // Update currentYAMLState
 
     // Apply the selected templates
@@ -109,6 +147,7 @@ async function generateYAML() {
         }
     }
 
+
     removeEmptyKeys(currentYAMLState);
     
     const stateToSerialize = JSON.parse(JSON.stringify(currentYAMLState));
@@ -119,6 +158,7 @@ async function generateYAML() {
     
     Prism.highlightElement(codeElement);
 }
+//// strip out any keys without values
 function removeEmptyKeys(yamlObject) {
     for (const key in yamlObject) {
         if (Array.isArray(yamlObject[key]) && yamlObject[key].length === 0) {
@@ -323,6 +363,162 @@ function populateTemplateDescriptions() {
 }
 // end template functions
 
+// begin user inputs functions
+let currentDisplayedInputs = new Set(); // Initialize the set outside the function to maintain state
+let userInputValues = {}; // Global object to store user input values
+//// Function to render user input fields, considering hidden inputs
+function renderUserInputFields() {
+    const userInputContainer = document.getElementById('user-input-fields');
+    const placeholderText = document.getElementById('user-inputs-placeholder');
+
+    let newInputFieldAdded = false; // Track if a new input field is added
+    const newDisplayedInputs = new Set();
+
+    const checkedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked[user-inputs]');
+
+    checkedCheckboxes.forEach(checkbox => {
+        const userInputConfig = checkbox.getAttribute('user-inputs');
+        if (userInputConfig) {
+            const inputConfigs = JSON.parse(userInputConfig);
+
+            inputConfigs.forEach(config => {
+                if (!config.hidden) {
+                    const inputId = config.id.trim();
+                    const label = config.desc.trim();
+                    const placeholder = `Enter ${label}`;
+
+                    newDisplayedInputs.add(inputId); // Track this input as being displayed
+
+                    if (!currentDisplayedInputs.has(inputId) && !document.getElementById(inputId)) {
+                        // If this input wasn't previously displayed, add it now
+                        addUserInputField(inputId, label, placeholder, config.value);
+                        newInputFieldAdded = true; // Mark that a new input field was added
+                    }
+                } else {
+                    if (config.value !== undefined) {
+                        setYAMLValueByPath(currentYAMLState, config.path, config.value);
+                    }
+                }
+            });
+        }
+    });
+
+    // Remove inputs that are no longer needed
+    currentDisplayedInputs.forEach(id => {
+        if (!newDisplayedInputs.has(id)) {
+            const inputField = document.getElementById(id);
+            if (inputField) {
+                inputField.parentElement.remove(); // Remove input from DOM
+                // Do not mark as newInputFieldAdded, since we're removing an input
+            }
+        }
+    });
+
+    // Only show toast if a new input field was added
+    if (newInputFieldAdded) {
+        showToast(); // Show toast notification only if a new input was added
+    }
+
+    currentDisplayedInputs = newDisplayedInputs; // Update the set to match currently displayed inputs
+
+    placeholderText.textContent = newDisplayedInputs.size > 0
+        ? 'Please provide the necessary information for the selected options. Note, everything you input stays local to your browser. Nothing is saved or transmitted anywhere.'
+        : 'No inputs required. Enabling an option which requires user input (API keys, etc) will populate fields on this tab.';
+
+    updateUserInputsBadge();
+}
+//// Function to add user input fields with an optional value
+function addUserInputField(id, labelText, placeholderText, value = '') {
+    const userInputContainer = document.getElementById('user-input-fields');
+    const inputDiv = document.createElement('div');
+    inputDiv.innerHTML = `
+        <label for="${id}">${labelText}</label>
+        <input type="text" id="${id}" placeholder="${placeholderText}" value="${userInputValues[id] || value}">
+    `;
+    userInputContainer.appendChild(inputDiv);
+
+    const inputField = document.getElementById(id);
+    applyHighlightIfEmpty(inputField); // Initial check if the input should be highlighted
+
+    // Debounced function to update YAML
+    const debouncedGenerateYAML = debounce(() => {
+        userInputValues[id] = inputField.value;
+        generateYAML();
+        updateUserInputsBadge(); // Update badge count on input change
+    }, 500); // 500 milliseconds debounce delay
+
+    // Attach the debounced function and highlight check to the input event
+    inputField.addEventListener('input', function() {
+        applyHighlightIfEmpty(inputField); // Check if the input should be highlighted
+        debouncedGenerateYAML(); // Trigger YAML generation with debounce
+    });
+}
+//// Function to apply highlight to empty input fields
+function applyHighlightIfEmpty(inputField) {
+    if (inputField.value.trim() === '') {
+        inputField.classList.add('highlight-empty');
+    } else {
+        inputField.classList.remove('highlight-empty');
+    }
+}
+//// Debounce function: Limits the rate at which a function can fire
+function debounce(func, delay) {
+    let timeoutId;
+    return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
+//// Set hive values by selection metadata
+function setYAMLValueByPath(obj, path, value) {
+    const keys = path.split('.');
+    let current = obj;
+
+    while (keys.length > 1) {
+        const key = keys.shift();
+        if (!current[key]) {
+            current[key] = {}; // Create nested objects as needed
+        }
+        current = current[key];
+    }
+
+    current[keys[0]] = value; // Set the final value
+}
+//// show badge on User Inputs tab for fields needing attention
+function updateUserInputsBadge() {
+    const inputs = document.querySelectorAll('#user-input-fields input');
+    let emptyCount = 0;
+
+    inputs.forEach(input => {
+        if (input.value.trim() === '') {
+            emptyCount++;
+        }
+    });
+
+    const badge = document.getElementById('user-inputs-badge');
+
+    if (emptyCount > 0) {
+        badge.textContent = emptyCount;
+        badge.style.display = 'inline'; // Show badge
+        badge.classList.add('attention-badge'); // Add attention-grabbing styles
+    } else {
+        badge.style.display = 'none'; // Hide badge
+        badge.classList.remove('attention-badge'); // Remove styles when not needed
+    }
+}
+//// Function to show a toast notification
+function showToast() {
+    const toastContainer = document.getElementById('toast-container');
+    toastContainer.style.display = 'block'; // Show the toast container
+
+    setTimeout(() => {
+        toastContainer.style.display = 'none';
+    }, 6000); // 6000 milliseconds = 6 seconds, matches animation duration
+}
+// end user inputs functions
+
 // begin artifact functions
 function getPatterns(configId) {
     const patterns = [];
@@ -412,6 +608,7 @@ function initializeListeners() {
                 });
             } else {
                 input.addEventListener('change', (event) => {
+                    renderUserInputFields();
                     generateYAML();
                 });
             }
@@ -420,7 +617,6 @@ function initializeListeners() {
 
     // Template listeners
     const templateCheckboxes = document.querySelectorAll('.template-checkbox');
-
     templateCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', async function (event) {
             const changedCheckbox = event.target;
@@ -497,6 +693,11 @@ function resetForm() {
     document.getElementById('days_retention_error').innerText = '';
     document.getElementById('is_delete_after_error').innerText = '';
     document.getElementById('is_ignore_cert_error').innerText = '';
+
+    // Clear stored user inputs
+    userInputValues = {}; // This line resets the userInputValues object
+    // Re-render the user input fields (to clear them) and regenerate the YAML
+    renderUserInputFields();
 
     generateYAML();
 }
@@ -586,6 +787,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('[data-toggle="popover"]').popover();
     populateTemplateDescriptions();
     handleCollapsingSections();
+    updateUserInputsBadge();
     initializeListeners();
     Prism.highlightAll();
     generateYAML();
@@ -600,7 +802,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add event listener for tab changes to show/hide the YAML Output Block
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         if (e.target.hash === '#about') {
-            loadReadme();
             document.getElementById('yamlOutputSection').style.display = 'none'; // Hide YAML Output Block
         } else {
             document.getElementById('yamlOutputSection').style.display = 'block'; // Show YAML Output Block
