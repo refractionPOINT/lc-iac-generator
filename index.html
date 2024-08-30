@@ -41,6 +41,11 @@
             <li><a data-toggle="tab" href="#lookup-resources">Lookup Resources</a></li>
             <li><a data-toggle="tab" href="#extensions">Extensions</a></li>
             <li><a data-toggle="tab" href="#artifact-collection">Artifact Collection</a></li>
+            <li>
+                <a data-toggle="tab" href="#user-inputs">User Inputs 
+                    <span id="user-inputs-badge" class="badge">0</span>
+                </a>
+            </li>
         </ul>
 
         <form id="yamlForm">
@@ -195,36 +200,60 @@
                     </div>
                     <div class="multi-column">
                         <label title="Alphamountain Category API" data-content="Query domains at alphamountain." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-alphamountain-category" name="api" value="alphamountain-category"> Alphamountain Category
+                            <input type="checkbox" id="api-alphamountain-category" name="api" value="alphamountain-category" 
+                                user-inputs='[
+                                    {"id": "alphamountain-api-key", "desc": "Alphamountain API Key", "path": "org-value.alphamountain"}
+                                ]'> Alphamountain Category
                         </label><br>
                         
                         <label title="Alphamountain Popularity API" data-content="Query domains at alphamountain." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-alphamountain-popularity" name="api" value="alphamountain-popularity"> Alphamountain Popularity
+                            <input type="checkbox" id="api-alphamountain-popularity" name="api" value="alphamountain-popularity" 
+                                user-inputs='[
+                                    {"id": "alphamountain-api-key", "desc": "Alphamountain API Key", "path": "org-value.alphamountain"}
+                                ]'> Alphamountain Popularity
                         </label><br>
                         
                         <label title="Alphamountain Threat API" data-content="Query domains at alphamountain." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-alphamountain-threat" name="api" value="alphamountain-threat"> Alphamountain Threat
+                            <input type="checkbox" id="api-alphamountain-threat" name="api" value="alphamountain-threat" 
+                                user-inputs='[
+                                    {"id": "alphamountain-api-key", "desc": "Alphamountain API Key", "path": "org-value.alphamountain"}
+                                ]'> Alphamountain Threat
                         </label><br>
                         
                         <label title="Echotrail Insights API" data-content="EchoTrail is an API service that allows you to perform a lookup of a file name or hash value. EchoTrail will return a summary of statistical details that describes the behavior of the submitted value, as observed from their sensors over time." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-echotrail-insights" name="api" value="echotrail-insights"> Echotrail Insights
+                            <input type="checkbox" id="api-echotrail-insights" name="api" value="echotrail-insights" 
+                                user-inputs='[
+                                    {"id": "echotrail-api-key", "desc": "EchoTrail API Key", "path": "org-value.echotrail"}
+                                ]'> EchoTrail Insights
                         </label><br>
                         
                         <label title="Greynoise Noise Context API" data-content="Get more information about a given IP address. Returns time ranges, IP metadata (network owner, ASN, reverse DNS pointer, country), associated actors, activity tags, and raw port scan and web request information." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-greynoise-noise-context" name="api" value="greynoise-noise-context"> Greynoise Noise Context
+                            <input type="checkbox" id="api-greynoise-noise-context" name="api" value="greynoise-noise-context" 
+                                user-inputs='[
+                                    {"id": "greynoise-api-key", "desc": "Greynoise API Key", "path": "org-value.greynoise"}
+                                ]'> Greynoise Noise Context
                         </label><br>
                         
                         <label title="Greynoise Riot API" data-content="RIOT identifies IPs from known benign services and organizations that commonly cause false positives in network security and threat intelligence products. The collection of IPs in RIOT is continually curated and verified to provide accurate results." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-greynoise-riot" name="api" value="greynoise-riot"> Greynoise Riot
+                            <input type="checkbox" id="api-greynoise-riot" name="api" value="greynoise-riot" 
+                                user-inputs='[
+                                    {"id": "greynoise-api-key", "desc": "Greynoise API Key", "path": "org-value.greynoise"}
+                                ]'> Greynoise Riot
                         </label><br>
                         
                         <label title="Hybrid Analysis Overview API" data-content="Hybrid Analysis, aka Falcon Sandbox, is a powerful, free malware analysis service for the community that detects and analyzes unknown threats. The Search API accepts a SHA256 value, and provides an extensive overview of a hash (if previously observed by the platform)." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-hybrid-analysis-overview" name="api" value="hybrid-analysis-overview"> Hybrid Analysis Overview
+                            <input type="checkbox" id="api-hybrid-analysis-overview" name="api" value="hybrid-analysis-overview" 
+                                user-inputs='[
+                                    {"id": "hybrid-analysis-api-key", "desc": "Hybrid Analysis API Key", "path": "org-value.hybrid-analysis"}
+                                ]'> Hybrid Analysis Overview
                         </label><br>
                         
                         <label title="Hybrid Analysis Search API" data-content="Hybrid Analysis, aka Falcon Sandbox, is a powerful, free malware analysis service for the community that detects and analyzes unknown threats. The Search lookup provides a basic lookup of a hash value." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-hybrid-analysis-search" name="api" value="hybrid-analysis-search"> Hybrid Analysis Search
-                        </label><br>
+                            <input type="checkbox" id="api-hybrid-analysis-search" name="api" value="hybrid-analysis-search" 
+                                user-inputs='[
+                                    {"id": "hybrid-analysis-api-key", "desc": "Hybrid Analysis API Key", "path": "org-value.hybrid-analysis"}
+                                ]'> Hybrid Analysis Search
+                        </label><br>                        
                         
                         <label title="Insight API" data-content="Insight provides storage, retention and searching of all data for up to one year." data-toggle="popover" data-trigger="hover" data-placement="bottom">
                             <input type="checkbox" id="api-insight" name="api" value="insight"> Insight
@@ -235,29 +264,46 @@
                         </label><br>
                         
                         <label title="Pangea Domain Reputation API" data-content="The Domain Intel service allows you to retrieve intelligence about known domain names, giving you insight into the reputation of a domain." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-pangea-domain-reputation" name="api" value="pangea-domain-reputation"> Pangea Domain Reputation
+                            <input type="checkbox" id="api-pangea-domain-reputation" name="api" value="pangea-domain-reputation" 
+                                user-inputs='[
+                                    {"id": "pangea-api-key", "desc": "Pangea API Key", "path": "org-value.pangea"}
+                                ]'> Pangea Domain Reputation
                         </label><br>
                         
                         <label title="Pangea File Reputation API" data-content="The File Intel service enables you to submit a file's hash and get the file's attributes back - giving you insight into the disposition of the file." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-pangea-file-reputation" name="api" value="pangea-file-reputation"> Pangea File Reputation
+                            <input type="checkbox" id="api-pangea-file-reputation" name="api" value="pangea-file-reputation" 
+                                user-inputs='[
+                                    {"id": "pangea-api-key", "desc": "Pangea API Key", "path": "org-value.pangea"}
+                                ]'> Pangea File Reputation
                         </label><br>
                         
                         <label title="Pangea IP Reputation API" data-content="The IP Intel service allows you to retrieve security information about known IP addresses that have been collected across the internet for several decades, giving you insight into the reputation of an IP." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-pangea-ip-reputation" name="api" value="pangea-ip-reputation"> Pangea IP Reputation
+                            <input type="checkbox" id="api-pangea-ip-reputation" name="api" value="pangea-ip-reputation" 
+                                user-inputs='[
+                                    {"id": "pangea-api-key", "desc": "Pangea API Key", "path": "org-value.pangea"}
+                                ]'> Pangea IP Reputation
                         </label><br>
                         
                         <label title="Pangea URL Reputation API" data-content="The URL Intel service allows you to retrieve intelligence about known URLs, giving you insight into the reputation of a URL." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-pangea-url-reputation" name="api" value="pangea-url-reputation"> Pangea URL Reputation
+                            <input type="checkbox" id="api-pangea-url-reputation" name="api" value="pangea-url-reputation" 
+                                user-inputs='[
+                                    {"id": "pangea-api-key", "desc": "Pangea API Key", "path": "org-value.pangea"}
+                                ]'> Pangea URL Reputation
                         </label><br>
                         
                         <label title="Pangea User Reputation API" data-content="The User Intel service allows you to check a large repository of breach data to see if a user’s Personally Identifiable Data (PII) or credentials have been compromised." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-pangea-user-reputation" name="api" value="pangea-user-reputation"> Pangea User Reputation
-                        </label><br>
+                            <input type="checkbox" id="api-pangea-user-reputation" name="api" value="pangea-user-reputation" 
+                                user-inputs='[
+                                    {"id": "pangea-api-key", "desc": "Pangea API Key", "path": "org-value.pangea"} 
+                                ]'> Pangea User Reputation
+                        </label><br>                                       
                         
                         <label title="VirusTotal API" data-content="VirusTotal is an API that can be queried for AntiVirus results of a file by hash. Set the VirusTotal API Key in the Integrations section of your organization. Provided by https://virustotal.com/." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                            <input type="checkbox" id="api-vt" name="api" value="vt"> VirusTotal
+                            <input type="checkbox" id="api-vt" name="api" value="vt" 
+                                user-inputs='[
+                                    {"id": "vt-api-key", "desc": "VirusTotal API Key", "path": "org-value.vt"}
+                                ]'> VirusTotal
                         </label><br>
-                        
                     </div>
                     </fieldset>
                 </div>
@@ -574,7 +620,13 @@
                             </label><br>
                             
                             <label title="Govee Extension" data-content="The Govee extension allows you to change the color of your Govee lights based on D&R rule actions." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                                <input type="checkbox" id="ext-govee" name="extensions" value="ext-govee"> Govee
+                                <input type="checkbox" id="ext-govee" name="extensions" value="ext-govee" 
+                                    user-inputs='[
+                                        {"id": "govee-api-key", "desc": "Govee API Key", "path": "hives.secret.govee-api-key.data.secret"},
+                                        {"id": "set-value", "path": "hives.secret.govee-api-key.usr_mtd.enabled", "value": true, "hidden": true},
+                                        {"id": "set-value", "path": "hives.extension_config.ext-govee.data.api_key", "value": "hive://secret/govee-api-key", "hidden": true},
+                                        {"id": "set-value", "path": "hives.extension_config.ext-govee.usr_mtd.enabled", "value": true, "hidden": true}
+                                    ]'> Govee
                             </label><br>
                             
                             <label title="Hayabusa Extension" data-content="The Hayabusa extension allows you to run Hayabusa against Windows event logs based on D&R rule actions." data-toggle="popover" data-trigger="hover" data-placement="bottom">
@@ -594,7 +646,7 @@
                             </label><br>
                             
                             <label title="LOLDrivers Extension" data-content="Lookup of Living Off the Land hashes from loldrivers.io." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                                <input type="checkbox" id="ext-loldrivers" name="extensions" value="ext-loldrivers"> LOLDrivers
+                                <input type="checkbox" id="loldrivers" name="extensions" value="loldrivers"> LOLDrivers
                             </label><br>
                             
                             <label title="Lookup Manager Extension" data-content="The Lookup Manager extension allows you to create, maintain & automatically refresh lookups in the organization to then reference them in Detection & Response Rules." data-toggle="popover" data-trigger="hover" data-placement="bottom">
@@ -602,11 +654,23 @@
                             </label><br>
                             
                             <label title="OTX Extension" data-content="Continuously import all your OTX pulses and the relevant D&R rules for most indicator types." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                                <input type="checkbox" id="ext-otx" name="extensions" value="ext-otx"> OTX
-                            </label><br>
+                                <input type="checkbox" id="ext-otx" name="extensions" value="ext-otx" 
+                                    user-inputs='[
+                                        {"id": "otx-api-key", "desc": "OTX API Key", "path": "hives.secret.otx-api-key.data.secret"},
+                                        {"id": "set-value", "path": "hives.secret.otx-api-key.usr_mtd.enabled", "value": true, "hidden": true},
+                                        {"id": "set-value", "path": "hives.extension_config.ext-otx.data.api_key", "value": "hive://secret/otx-api-key", "hidden": true},
+                                        {"id": "set-value", "path": "hives.extension_config.ext-otx.usr_mtd.enabled", "value": true, "hidden": true}
+                                    ]'> OTX
+                            </label><br>            
                             
                             <label title="PagerDuty Extension" data-content="The PagerDuty extension allows you to trigger events within PagerDuty." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                                <input type="checkbox" id="ext-pagerduty" name="extensions" value="ext-pagerduty"> PagerDuty
+                                <input type="checkbox" id="ext-pagerduty" name="extensions" value="ext-pagerduty" 
+                                    user-inputs='[
+                                        {"id": "pagerduty-integration-key", "desc": "PagerDuty Integration Key", "path": "hives.secret.pagerduty-integration-key.data.secret"},
+                                        {"id": "set-value", "path": "hives.secret.pagerduty-integration-key.usr_mtd.enabled", "value": true, "hidden": true},
+                                        {"id": "set-value", "path": "hives.extension_config.ext-pagerduty.data.integration_key", "value": "hive://secret/pagerduty-integration-key", "hidden": true},
+                                        {"id": "set-value", "path": "hives.extension_config.ext-pagerduty.usr_mtd.enabled", "value": true, "hidden": true}
+                                    ]'> PagerDuty
                             </label><br>
                             
                             <label title="Payload Manager Extension" data-content="The Payloads Manager extension allows you to create, maintain & automatically refresh payloads in the organization to then deploy them on endpoints via Windows, Mac, or Linux sensors." data-toggle="popover" data-trigger="hover" data-placement="bottom">
@@ -630,9 +694,15 @@
                             </label><br>
                             
                             <label title="Twilio Extension" data-content="The Twilio extension can send messages based on Detection & Response rules." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                                <input type="checkbox" id="ext-twilio" name="extensions" value="ext-twilio"> Twilio
+                                <input type="checkbox" id="ext-twilio" name="extensions" value="ext-twilio" 
+                                    user-inputs='[
+                                        {"id": "twilio-api-key", "desc": "Twilio SID/Token", "path": "hives.secret.twilio-sid-token.data.secret"},
+                                        {"id": "set-value", "path": "hives.secret.twilio-api-key.usr_mtd.enabled", "value": true, "hidden": true},
+                                        {"id": "set-value", "path": "hives.extension_config.ext-twilio.data.sid_token", "value": "hive://secret/twilio-sid-token", "hidden": true},
+                                        {"id": "set-value", "path": "hives.extension_config.ext-twilio.usr_mtd.enabled", "value": true, "hidden": true}
+                                    ]'> Twilio
                             </label><br>
-                            
+
                             <label title="Velociraptor Extension" data-content="Velociraptor is an advanced digital forensic and incident response tool that enhances your visibility into your endpoints." data-toggle="popover" data-trigger="hover" data-placement="bottom">
                                 <input type="checkbox" id="ext-velociraptor" name="extensions" value="ext-velociraptor"> Velociraptor
                             </label><br>
@@ -783,6 +853,16 @@
                         </fieldset>
                     </fieldset>
                 </div>
+                <!-- User Inputs Tab -->
+                <div id="user-inputs" class="tab-pane fade">
+                    <fieldset>
+                        <legend>User Inputs</legend>
+                        <p id="user-inputs-placeholder">No inputs required. Enabling an option which requires user input (API keys, etc) will populate fields on this tab.</p>
+                        <div id="user-input-fields">
+                            <!-- Dynamic input fields will be inserted here -->
+                        </div>
+                    </fieldset>
+                </div>                
                 <!-- YAML Output Block -->
                 <div id="yamlOutputSection" class="template-boundary">
                     <h2>Infrastructure-as-Code Template:</h2>
@@ -795,6 +875,14 @@
             </div>
         </form>
     </div>
+
+    <!-- Toast container for notifications -->
+    <div id="toast-container" style="position: fixed; top: 10px; right: 10px; z-index: 1000; display: none;">
+        <div id="user-input-toast" class="toast">
+            You have selected a feature which requires additional input. Please provide the necessary data under "User Inputs"
+        </div>
+    </div>
+
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TJRD9PG"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
