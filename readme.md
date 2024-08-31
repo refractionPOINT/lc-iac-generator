@@ -30,7 +30,7 @@ Repo URL: https://github.com/refractionPOINT/lc-iac-generator/
 
 - This tab allows users to select from a set of API resources that can be included in the YAML template.
 - Users can select individual API resources or use the "Select All" checkbox to select all available APIs at once.
-- Some API resources support (or even expect) a user-provided API key. The generator does not currently support adding this, so it may need to be done seperately after applying the IaC.
+- Some API resources support (or even expect) a user-provided API key. If you enable one of these options, a new input field will appear on the "User Inputs" tab (see below).
 
 ### Lookup Resources Tab
 
@@ -43,6 +43,8 @@ Repo URL: https://github.com/refractionPOINT/lc-iac-generator/
 - The Extensions tab provides checkboxes for selecting different extensions to include in the configuration.
 - Users can also choose sub-categories like Rulesets.
     - Note, the "Soteria" rulesets incur additional cost. Read about these rulesets [here](https://docs.limacharlie.io/docs/detection-and-response-managed-rulesets-soteria-rules).
+- Some extensions support (or even expect) a user-provided API key. If you enable one of these options, a new input field will appear on the "User Inputs" tab (see below).
+
 
 ### Artifact Collection Tab
 
