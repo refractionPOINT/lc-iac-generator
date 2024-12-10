@@ -1,0 +1,226 @@
+# This template contains D&R rules for many common Defender event IDs. 
+# NOTE: This relies on collection of the following WEL pattern, which can be specified on the "Artifact Collection" page:
+# wel://Microsoft-Windows-Windows Defender/Operational:*
+version: 3
+hives:
+    dr-general:
+        Windows Defender Malware Detected:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "1006"
+                respond:
+                    - action: report
+                      name: Windows Defender Malware Detected
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Detects malware events reported by Windows Defender."
+        Windows Defender History Deleted:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "1013"
+                respond:
+                    - action: report
+                      name: Windows Defender History Deleted
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Detects deletion of Defender history."
+        Windows Defender Behavior Detected:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "1015"
+                respond:
+                    - action: report
+                      name: Windows Defender Behavior Detected
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Detects behavior-based detections by Windows Defender."
+        Windows Defender Activity Detected:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "1116"
+                respond:
+                    - action: report
+                      name: Windows Defender Activity Detected
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Detects other activity logged by Windows Defender."
+        Windows Defender Activity Prevented:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "1117"
+                respond:
+                    - action: report
+                      name: Windows Defender Malware Prevented
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Detects prevention events by Windows Defender."
+        Windows Defender Settings Changed:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "5007"
+                respond:
+                    - action: report
+                      name: Windows Defender Settings Changed
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Detects when Windows Defender settings have been modified."
+        Windows Defender Protection Stopped:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "5001"
+                respond:
+                    - action: report
+                      name: Windows Defender Protection Stopped
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Detects when real-time protection is stopped, possibly indicating tampering."
+        Windows Defender Malware Action Blocked:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "1118"
+                respond:
+                    - action: report
+                      name: Windows Defender Malware Action Blocked
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Logs blocked malware actions that require further investigation."
+        Windows Defender Threat Quarantined:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "1119"
+                respond:
+                    - action: report
+                      name: Windows Defender Threat Quarantined
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Indicates that a threat was successfully quarantined by Defender."
+        Windows Defender Remediation Failed:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "1123"
+                respond:
+                    - action: report
+                      name: Windows Defender Remediation Failed
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Alerts when Defender fails to remediate a detected threat."
+        Windows Defender Signature Update Failure:
+            data:
+                detect:
+                    event: WEL
+                    op: and
+                    rules:
+                        - op: is
+                          path: event/EVENT/System/Channel
+                          value: Microsoft-Windows-Windows Defender/Operational
+                        - op: is
+                          path: event/EVENT/System/EventID
+                          value: "5004"
+                respond:
+                    - action: report
+                      name: Windows Defender Signature Update Failure
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: "Logs signature update failures, which could reduce Defender's effectiveness."
