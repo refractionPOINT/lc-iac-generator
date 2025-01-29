@@ -9,7 +9,8 @@ hives:
                         - EXISTING_PROCESS
                     op: matches
                     path: event/FILE_PATH
-                    re: (apache|httpd|nginx|lighttpd|tomcat|java|w3wp|iisexpress|php-fpm|gunicorn|uwsgi)
+                    case sensitive: false
+                    re: (apache|httpd|nginx|lighttpd|tomcat|nodejs|w3wp|iisexpress|php-fpm|gunicorn|uwsgi)
                 respond:
                     - action: add tag
                       tag: webserver
