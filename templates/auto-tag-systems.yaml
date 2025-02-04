@@ -24,6 +24,7 @@ hives:
                     events:
                         - NEW_PROCESS
                         - EXISTING_PROCESS
+                        - NETWORK_CONNECTIONS
                     op: contains
                     path: event/FILE_PATH
                     value: 'Microsoft.ActiveDirectory.WebServices.exe'
