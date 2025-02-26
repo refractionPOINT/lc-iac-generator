@@ -31,6 +31,7 @@ hives:
               - wel://Microsoft-Windows-Windows Defender/Operational:*
               - wel://Microsoft-Windows-WMI-Activity/Operational:*
               - wel://Microsoft-Windows-Security-Mitigations/KernelMode:*
+              - wel://Microsoft-Windows-TaskScheduler/Operational:*
               - wel://Directory Service:*
               - wel://DFS Replication:*
               - wel://Active Directory Web Services:*
