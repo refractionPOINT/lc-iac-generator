@@ -46,6 +46,7 @@
                     <span id="user-inputs-badge" class="badge">0</span>
                 </a>
             </li>
+            <li><a data-toggle="tab" href="#generated-template">Generated Template</a></li>
         </ul>
 
         <form id="yamlForm">
@@ -84,6 +85,8 @@
                                     data-content="This template demonstrates the powerful DFIR extensions available in LimaCharlie.">
                                     <input type="checkbox"
                                         class="template-checkbox"
+                                        name="automate-dfir"
+                                        id="automate-dfir"
                                         data-template-path="./templates/automate-dfir.yaml"
                                     >
                                     DFIR Automation
@@ -97,6 +100,8 @@
                                     data-content="This template sets up the necessary configuration to acquire PowerShell transcripts.">
                                     <input type="checkbox"
                                         class="template-checkbox"
+                                        name="acquire-ps-transcripts"
+                                        id="automate-ps-transcripts"
                                         data-template-path="./templates/acquire-ps-transcripts.yaml"
                                     >
                                     Acquire PowerShell Transcripts
@@ -110,6 +115,8 @@
                                     >
                                     <input type="checkbox"
                                         class="template-checkbox"
+                                        name="leverage-elastic-yara"
+                                        id="leverage-elastic-yara"
                                         data-template-path="./templates/leverage-elastic-yara.yaml"
                                     >
                                     Leverage Elastic YARA Ruleset
@@ -123,6 +130,8 @@
                                     >
                                     <input type="checkbox"
                                         class="template-checkbox"
+                                        name="auto-tag-systems"
+                                        id="auto-tag-systems"
                                         data-template-path="./templates/auto-tag-systems.yaml"
                                     >
                                     Auto-Tag Systems
@@ -136,6 +145,8 @@
                                     >
                                     <input type="checkbox"
                                         class="template-checkbox"
+                                        name="informational-detections"
+                                        id="informational-detections"
                                         data-template-path="./templates/informational-detection-rules.yaml"
                                     >
                                     Informational Detections
@@ -149,6 +160,8 @@
                                     >
                                     <input type="checkbox"
                                         class="template-checkbox"
+                                        name="generic-detection-rules"
+                                        id="generic-detection-rules"
                                         data-template-path="./templates/generic-detection-rules.yaml"
                                     >
                                     Generic Detection Rules
@@ -162,6 +175,8 @@
                                     >
                                     <input type="checkbox"
                                         class="template-checkbox"
+                                        name="use-lookups"
+                                        id="use-lookups"
                                         data-template-path="./templates/use-lookups.yaml"
                                     >
                                     Use Lookups
@@ -175,6 +190,8 @@
                                     >
                                     <input type="checkbox"
                                         class="template-checkbox"
+                                        name="yara-scan-webroot"
+                                        id="yara-scan-webroot"
                                         data-template-path="./templates/yara-scan-webroot.yaml"
                                     >
                                     YARA Scan Webroot
@@ -188,6 +205,8 @@
                                     >
                                     <input type="checkbox"
                                         class="template-checkbox"
+                                        name="windows-defender-detection-rules"
+                                        id="windows-defender-detection-rules"
                                         data-template-path="./templates/windows-defender-detection-rules.yaml"
                                     >
                                     Windows Defender Detection Rules
@@ -790,46 +809,45 @@
                             </legend>
                             <div id="windowsConfig" class="collapse">
                                 <label title="Windows WEL Streaming" data-content="Steam WEL into the sensor timeline alongside EDR telemetry." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                                    <input type="checkbox" id="windows-wel-streaming" onclick="toggleArtifactConfig('windows-wel-streaming')"> Windows WEL Streaming
+                                    <input type="checkbox" id="windows-wel-streaming" name="windows-wel-streaming" onclick="toggleArtifactConfig('windows-wel-streaming')"> Windows WEL Streaming
                                 </label>
                                 <div id="patterns-windows-wel-streaming" style="margin-left: 20px;">
-                                    <label><input type="checkbox" id="pattern-windows-wel-1" value="wel://system:*"> wel://system:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-2" value="wel://security:*"> wel://security:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-3" value="wel://application:*"> wel://application:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-4" value="wel://Microsoft-Windows-IIS-Configuration/Administrative:*"> wel://Microsoft-Windows-IIS-Configuration/Administrative:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-5" value="wel://Microsoft-Windows-IIS-Configuration/Operational:*"> wel://Microsoft-Windows-IIS-Configuration/Operational:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-6" value="wel://Microsoft-Windows-IIS-Logging/Logs:*"> wel://Microsoft-Windows-IIS-Logging/Logs:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-7" value="wel://Microsoft-Windows-PowerShell/Operational:*"> wel://Microsoft-Windows-PowerShell/Operational:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-8" value="wel://Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational:*"> wel://Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-9" value="wel://Microsoft-Windows-Sysmon/Operational:*"> wel://Microsoft-Windows-Sysmon/Operational:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-10" value="wel://Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational:*"> wel://Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-11" value="wel://Microsoft-Windows-Windows Defender/Operational:*"> wel://Microsoft-Windows-Windows Defender/Operational:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-12" value="wel://Microsoft-Windows-WMI-Activity/Operational:*"> wel://Microsoft-Windows-WMI-Activity/Operational:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-13" value="wel://Microsoft-Windows-Security-Mitigations/KernelMode:*"> wel://Microsoft-Windows-Security-Mitigations/KernelMode:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-14" value="wel://Directory Service:*"> wel://Directory Service:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-15" value="wel://DNS Server:*"> wel://DNS Server:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-16" value="wel://DFS Replication:*"> wel://DFS Replication:*</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-wel-17" value="wel://Active Directory Web Services:*"> wel://Active Directory Web Services:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-1" name="pattern-windows-wel-1" value="wel://system:*"> wel://system:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-2" name="pattern-windows-wel-2" value="wel://security:*"> wel://security:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-3" name="pattern-windows-wel-3" value="wel://application:*"> wel://application:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-4" name="pattern-windows-wel-4" value="wel://Microsoft-Windows-IIS-Configuration/Administrative:*"> wel://Microsoft-Windows-IIS-Configuration/Administrative:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-5" name="pattern-windows-wel-5" value="wel://Microsoft-Windows-IIS-Configuration/Operational:*"> wel://Microsoft-Windows-IIS-Configuration/Operational:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-6" name="pattern-windows-wel-6" value="wel://Microsoft-Windows-IIS-Logging/Logs:*"> wel://Microsoft-Windows-IIS-Logging/Logs:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-7" name="pattern-windows-wel-7" value="wel://Microsoft-Windows-PowerShell/Operational:*"> wel://Microsoft-Windows-PowerShell/Operational:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-8" name="pattern-windows-wel-8" value="wel://Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational:*"> wel://Microsoft-Windows-RemoteDesktopServices-RdpCoreTS/Operational:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-9" name="pattern-windows-wel-9" value="wel://Microsoft-Windows-Sysmon/Operational:*"> wel://Microsoft-Windows-Sysmon/Operational:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-10" name="pattern-windows-wel-10" value="wel://Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational:*"> wel://Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-11" name="pattern-windows-wel-11" value="wel://Microsoft-Windows-Windows Defender/Operational:*"> wel://Microsoft-Windows-Windows Defender/Operational:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-12" name="pattern-windows-wel-12" value="wel://Microsoft-Windows-WMI-Activity/Operational:*"> wel://Microsoft-Windows-WMI-Activity/Operational:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-13" name="pattern-windows-wel-13" value="wel://Microsoft-Windows-Security-Mitigations/KernelMode:*"> wel://Microsoft-Windows-Security-Mitigations/KernelMode:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-14" name="pattern-windows-wel-14" value="wel://Directory Service:*"> wel://Directory Service:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-15" name="pattern-windows-wel-15" value="wel://DNS Server:*"> wel://DNS Server:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-16" name="pattern-windows-wel-16" value="wel://DFS Replication:*"> wel://DFS Replication:*</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-wel-17" name="pattern-windows-wel-17" value="wel://Active Directory Web Services:*"> wel://Active Directory Web Services:*</label><br>
                                 </div>
                                 <label title="Windows EVTX Uploads" data-content="Upload raw EVTX files as artifacts. NOTE: this does NOT stream WEL into the sensor timeline." data-toggle="popover" data-trigger="hover" data-placement="bottom">
-                                    <input type="checkbox" id="windows-evtx-uploads" onclick="toggleArtifactConfig('windows-evtx-uploads')"> Windows EVTX Uploads
+                                    <input type="checkbox" id="windows-evtx-uploads" name="windows-evtx-uploads" onclick="toggleArtifactConfig('windows-evtx-uploads')"> Windows EVTX Uploads
                                 </label>
                                 <div id="patterns-windows-evtx-uploads" style="margin-left: 20px;">
-                                    <label><input type="checkbox" id="pattern-windows-evtx-1" value="%SystemRoot%\\system32\\winevt\\logs\\system.evtx"> system.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-2" value="%SystemRoot%\\system32\\winevt\\logs\\security.evtx"> security.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-3" value="%SystemRoot%\\system32\\winevt\\logs\\application.evtx"> application.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-4" value="%SystemRoot%\\system32\\winevt\\logs\\Microsoft-Windows-PowerShell%4Operational.evtx"> Microsoft-Windows-PowerShell%4Operational.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-5" value="%SystemRoot%\\system32\\winevt\\logs\\Microsoft-Windows-WMI-Activity%4Operational.evtx"> Microsoft-Windows-WMI-Activity%4Operational.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-6" value="%SystemRoot%\\system32\\winevt\\logs\\Microsoft-Windows-Security-Mitigations%4KernelMode.evtx"> Microsoft-Windows-Security-Mitigations%4KernelMode.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-7" value="%SystemRoot%\\system32\\winevt\\logs\\Microsoft-Windows-Windows Firewall With Advanced Security%4Firewall.evtx"> Microsoft-Windows-Windows Firewall With Advanced Security%4Firewall.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-8" value="%SystemRoot%\\system32\\winevt\\logs\\Microsoft-Windows-RemoteDesktopServices-RdpCoreTS%4Operational.evtx"> Microsoft-Windows-RemoteDesktopServices-RdpCoreTS%4Operational.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-9" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Security-Mitigations%4UserMode.evtx"> Microsoft-Windows-Security-Mitigations%4UserMode.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-10" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Sysmon%4Operational.evtx"> Microsoft-Windows-Sysmon%4Operational.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-11" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Windows Defender%4Operational.evtx"> Microsoft-Windows-Windows Defender%4Operational.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-12" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-VHDMP-Operational.evtx"> Microsoft-Windows-VHDMP-Operational.evtx</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-13" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TaskScheduler/Operational"> Microsoft-Windows-TaskScheduler/Operational</label><br>
-                                    <label><input type="checkbox" id="pattern-windows-evtx-14" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-RDPClient%4Operational.evtx"> Microsoft-Windows-TerminalServices-RDPClient%4Operational.evtx</label><br>
-                                </div>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-1" name="pattern-windows-evtx-1" value="%SystemRoot%\\system32\\winevt\\logs\\system.evtx"> system.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-2" name="pattern-windows-evtx-2" value="%SystemRoot%\\system32\\winevt\\logs\\security.evtx"> security.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-3" name="pattern-windows-evtx-3" value="%SystemRoot%\\system32\\winevt\\logs\\application.evtx"> application.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-4" name="pattern-windows-evtx-4" value="%SystemRoot%\\system32\\winevt\\logs\\Microsoft-Windows-PowerShell%4Operational.evtx"> Microsoft-Windows-PowerShell%4Operational.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-5" name="pattern-windows-evtx-5" value="%SystemRoot%\\system32\\winevt\\logs\\Microsoft-Windows-WMI-Activity%4Operational.evtx"> Microsoft-Windows-WMI-Activity%4Operational.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-6" name="pattern-windows-evtx-6" value="%SystemRoot%\\system32\\winevt\\logs\\Microsoft-Windows-Security-Mitigations%4KernelMode.evtx"> Microsoft-Windows-Security-Mitigations%4KernelMode.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-7" name="pattern-windows-evtx-7" value="%SystemRoot%\\system32\\winevt\\logs\\Microsoft-Windows-Windows Firewall With Advanced Security%4Firewall.evtx"> Microsoft-Windows-Windows Firewall With Advanced Security%4Firewall.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-8" name="pattern-windows-evtx-8" value="%SystemRoot%\\system32\\winevt\\logs\\Microsoft-Windows-RemoteDesktopServices-RdpCoreTS%4Operational.evtx"> Microsoft-Windows-RemoteDesktopServices-RdpCoreTS%4Operational.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-9" name="pattern-windows-evtx-9" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Security-Mitigations%4UserMode.evtx"> Microsoft-Windows-Security-Mitigations%4UserMode.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-10" name="pattern-windows-evtx-10" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Sysmon%4Operational.evtx"> Microsoft-Windows-Sysmon%4Operational.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-11" name="pattern-windows-evtx-11" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-Windows Defender%4Operational.evtx"> Microsoft-Windows-Windows Defender%4Operational.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-12" name="pattern-windows-evtx-12" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-VHDMP-Operational.evtx"> Microsoft-Windows-VHDMP-Operational.evtx</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-13" name="pattern-windows-evtx-13" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TaskScheduler/Operational"> Microsoft-Windows-TaskScheduler/Operational</label><br>
+                                    <label><input type="checkbox" id="pattern-windows-evtx-14" name="pattern-windows-evtx-14" value="%SystemRoot%\\System32\\Winevt\\Logs\\Microsoft-Windows-TerminalServices-RDPClient%4Operational.evtx"> Microsoft-Windows-TerminalServices-RDPClient%4Operational.evtx</label><br>                                </div>
                             </div>
                         </fieldset>
 
@@ -840,7 +858,7 @@
                             </legend>
                             <div id="macConfig" class="collapse">
                                 <label title="macOS Logs">
-                                    <input type="checkbox" id="mac-logs" onclick="toggleArtifactConfig('mac-logs')"> macOS Logs
+                                    <input type="checkbox" id="mac-logs" name="mac-logs" onclick="toggleArtifactConfig('mac-logs')"> macOS Logs
                                 </label>
                                 <div id="patterns-mac-logs" style="margin-left: 20px;">
                                     <label><input type="checkbox" id="pattern-mac-logs-1" value="/var/log/*.1"> /var/log/*.1</label><br>
@@ -876,6 +894,9 @@
                             <!-- Dynamic input fields will be inserted here -->
                         </div>
                     </fieldset>
+                </div>
+                <!-- Generated Template Tab -->
+                <div id="generated-template" class="tab-pane fade">
                 </div>                
                 <!-- YAML Output Block -->
                 <div id="yamlOutputSection" class="template-boundary">

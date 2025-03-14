@@ -1,5 +1,5 @@
 // app versioning - https://semver.org/
-const version = '1.2.1';
+const version = '1.3.0';
 
 // begin yaml generation
 let currentYAMLState = {}; // Store the current state of the YAML
@@ -597,19 +597,21 @@ function validateInput() {
 
 // begin general functions
 function initializeListeners() {
-    const formInputs = document.querySelectorAll('#yamlForm input');
+    // First, apply URL state to checkboxes
+    applyCheckboxStateFromURL();
 
+    const formInputs = document.querySelectorAll('#yamlForm input');
     formInputs.forEach(input => {
-        // Check if the input is not a template checkbox
         if (!input.classList.contains('template-checkbox')) {
             if (input.type === 'text' || input.type === 'textarea') {
-                input.addEventListener('input', (event) => {
+                input.addEventListener('input', () => {
                     generateYAML();
                 });
             } else {
-                input.addEventListener('change', (event) => {
+                input.addEventListener('change', () => {
                     renderUserInputFields();
                     generateYAML();
+                    updateURLWithCheckboxState();
                 });
             }
         }
@@ -621,13 +623,13 @@ function initializeListeners() {
         checkbox.addEventListener('change', async function (event) {
             const changedCheckbox = event.target;
             const templateFilePath = changedCheckbox.getAttribute('data-template-path');
-
             if (changedCheckbox.checked && templateFilePath) {
                 generateYAML();
             } else if (!changedCheckbox.checked && templateFilePath) {
                 await removeTemplate(templateFilePath);
                 generateYAML();
             }
+            updateURLWithCheckboxState();
         });
     });
 
@@ -700,6 +702,7 @@ function resetForm() {
     renderUserInputFields();
 
     generateYAML();
+    updateURLWithCheckboxState();
 }
 function copyToClipboard() {
     const yamlOutput = document.getElementById('yamlOutput');
@@ -779,7 +782,59 @@ function clearAutoEnabledCheckbox(checkbox) {
         }
     }
 }
+
+
 // end general functions
+
+// URL parameter handling
+function updateURLWithCheckboxState() {
+    // Start with any existing URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Remove any old checkbox IDs from the params (optional step)
+    // For example, if you only store numeric or short IDs, adapt as needed
+    for (const key of [...urlParams.keys()]) {
+        // If you want to keep 'tab' and other parameters, skip removing them
+        if (key !== 'tab') {
+            urlParams.delete(key);
+        }
+    }
+
+    // Add each checked checkbox ID into the parameters
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach((checkbox) => {
+        const id = checkbox.getAttribute('id');
+        if (id) {
+            // Store as key (like ?myCheckbox&someOtherCheckbox)
+            // Using set('id','') produces ?id=, so an alternative is appended formatting
+            urlParams.set(id, ''); 
+        }
+    });
+
+    // Build the new URL, preserving the 'tab' parameter and any others
+    const newURL = window.location.pathname + '?' + urlParams.toString();
+    history.replaceState(null, '', newURL);
+}
+
+function applyCheckboxStateFromURL() {
+    const query = new URLSearchParams(window.location.search);
+    const enabledIds = [];
+    for (const key of query.keys()) {
+        enabledIds.push(decodeURIComponent(key));
+    }
+    document.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+        const id = checkbox.getAttribute('id');
+        checkbox.checked = id && enabledIds.includes(id);
+    });
+    renderUserInputFields();
+}
+
+function setActiveTabInURL(tabId) {
+    // Preserve existing URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('tab', tabId.replace('#','')); // e.g. "about", "generated-template"
+    const newURL = window.location.pathname + '?' + urlParams.toString();
+    history.replaceState(null, '', newURL);
+}
 
 // initialize on load
 document.addEventListener('DOMContentLoaded', () => {
@@ -792,19 +847,28 @@ document.addEventListener('DOMContentLoaded', () => {
     Prism.highlightAll();
     generateYAML();
 
+    // 1) If 'tab' param is present, switch to that tab
+    const urlParams = new URLSearchParams(window.location.search);
+    const savedTab = urlParams.get('tab');
+    if (savedTab) {
+        $(`a[href="#${savedTab}"]`).tab('show');
+    }
+
+    // 2) Whenever a new tab is shown, update the URL
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        setActiveTabInURL(e.target.hash);
+        if (e.target.hash === '#about') {
+            loadReadme();
+            document.getElementById('yamlOutputSection').style.display = 'none';
+        } else {
+            document.getElementById('yamlOutputSection').style.display = 'block';
+        }
+    });
+
     // Check if the 'About' tab is active and load the content
     const aboutTab = document.querySelector('li.active a[href="#about"]');
     if (aboutTab) {
         loadReadme();
         document.getElementById('yamlOutputSection').style.display = 'none'; // Hide YAML Output Block
     }
-
-    // Add event listener for tab changes to show/hide the YAML Output Block
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        if (e.target.hash === '#about') {
-            document.getElementById('yamlOutputSection').style.display = 'none'; // Hide YAML Output Block
-        } else {
-            document.getElementById('yamlOutputSection').style.display = 'block'; // Show YAML Output Block
-        }
-    });
 });
