@@ -1,24 +1,7 @@
-# This template adds a set of D&R rules which auto-tag systems based on observed behavior.
+# This template adds a set of D&R rules which query system info and auto-tag systems based on observed behavior.
+version: 3
 hives:
     dr-general:
-        Auto-Tag Web Servers:
-            data:
-                detect:
-                    events:
-                        - NEW_PROCESS
-                        - EXISTING_PROCESS
-                    op: matches
-                    path: event/FILE_PATH
-                    case sensitive: false
-                    re: (apache|httpd|nginx|lighttpd|tomcat|nodejs|w3wp|iisexpress|php-fpm|gunicorn|uwsgi)
-                respond:
-                    - action: add tag
-                      tag: webserver
-            usr_mtd:
-                enabled: true
-                expiry: 0
-                tags: []
-                comment: "Watch for common web server processes and tag the system accordingly."
         Auto-Tag Domain Controllers:
             data:
                 detect:
@@ -26,14 +9,132 @@ hives:
                         - NEW_PROCESS
                         - EXISTING_PROCESS
                         - NETWORK_CONNECTIONS
-                    op: contains
-                    path: event/FILE_PATH
-                    value: 'Microsoft.ActiveDirectory.WebServices.exe'
+                    op: and
+                    rules:
+                        - op: contains
+                          path: event/FILE_PATH
+                          value: Microsoft.ActiveDirectory.WebServices.exe
+                        - not: true
+                          op: is tagged
+                          tag: domain-controller
                 respond:
                     - action: add tag
+                      entire_device: true
                       tag: domain-controller
             usr_mtd:
                 enabled: true
                 expiry: 0
                 tags: []
-                comment: "Watch for common domain controller process and tag the system accordingly."
+                comment: Watch for common domain controller process and tag the system accordingly.
+        Auto-Tag Ubuntu Systems:
+            data:
+                detect:
+                    event: OS_VERSION_REP
+                    op: and
+                    rules:
+                        - not: true
+                          op: is tagged
+                          tag: ubuntu
+                        - case sensitive: false
+                          op: matches
+                          path: event/FILE_INFO
+                          re: (ubuntu)
+                respond:
+                    - action: add tag
+                      entire_device: true
+                      tag: ubuntu
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+        Auto-Tag Web Servers:
+            data:
+                detect:
+                    events:
+                        - NEW_PROCESS
+                        - EXISTING_PROCESS
+                    op: and
+                    rules:
+                        - case sensitive: false
+                          op: matches
+                          path: event/FILE_PATH
+                          re: (apache|httpd|nginx|lighttpd|tomcat|nodejs|w3wp|iisexpress|php-fpm|gunicorn|uwsgi)
+                        - not: true
+                          op: is tagged
+                          tag: webserver
+                respond:
+                    - action: add tag
+                      entire_device: true
+                      tag: webserver
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: Watch for common web server processes and tag the system accordingly.
+        Auto-Tag Windows Desktops:
+            data:
+                detect:
+                    event: OS_VERSION_REP
+                    op: and
+                    rules:
+                        - not: true
+                          op: is tagged
+                          tag: desktop
+                        - case sensitive: false
+                          op: starts with
+                          path: event/FRIENDLY/PRODUCT
+                          value: Windows 1
+                respond:
+                    - action: add tag
+                      entire_device: true
+                      tag: desktop
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+        Auto-Tag Windows Server:
+            data:
+                detect:
+                    event: OS_VERSION_REP
+                    op: and
+                    rules:
+                        - not: true
+                          op: is tagged
+                          tag: server
+                        - case sensitive: false
+                          op: starts with
+                          path: event/FRIENDLY/PRODUCT
+                          value: Windows Server
+                respond:
+                    - action: add tag
+                      entire_device: true
+                      tag: server
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: ""
+        Sensor Connected - Collect System Info:
+            data:
+                detect:
+                    events:
+                        - CONNECTED
+                    op: exists
+                    path: /
+                    target: deployment
+                respond:
+                    - action: task
+                      command: os_version
+                    - action: task
+                      command: os_services
+                    - action: task
+                      command: os_processes
+            usr_mtd:
+                enabled: true
+                expiry: 0
+                tags: []
+                comment: Run info gathering commands when a sensor connects to trigger a reply event that will be used for tagging
+
+
