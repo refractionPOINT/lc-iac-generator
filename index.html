@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LimaCharlie IaC Generator</title>
     <link rel="icon" type="image/x-icon" href="https://storage.googleapis.com/limacharlie-io/favicon.png">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="js/script.js"></script>
+    <script src="js/script.js?v=1.4.0"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
@@ -18,6 +17,10 @@
     <link href="https://cdn.jsdelivr.net/npm/prismjs/plugins/line-numbers/prism-line-numbers.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=1.4.0">
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -28,26 +31,37 @@
 </head>
 <body>
     <div class="container">
-        <div class="app-version"></div>
-        <h1>LimaCharlie IaC Generator</h1>
+        <header class="app-header">
+            <div class="brand-mark" aria-hidden="true">LC</div>
+            <div class="app-heading">
+                <p class="app-kicker">Infrastructure as Code</p>
+                <h1>LimaCharlie IaC Generator</h1>
+                <p class="app-summary">Select the capabilities you need and build a deployment-ready YAML template.</p>
+            </div>
+            <div class="app-version"></div>
+        </header>
 
         <!-- To contribute, read the tips in the corresponding sections below -->
 
         <!-- Navigation Tabs -->
+        <nav class="workflow-nav" aria-label="Generator sections">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#about">About</a></li>
-            <li><a data-toggle="tab" href="#preconfigured">Preconfigured Templates</a></li>
-            <li><a data-toggle="tab" href="#api-resources">API Resources</a></li>
-            <li><a data-toggle="tab" href="#lookup-resources">Lookup Resources</a></li>
+            <li><a data-toggle="tab" href="#preconfigured">Templates</a></li>
+            <li><a data-toggle="tab" href="#api-resources">API resources</a></li>
+            <li><a data-toggle="tab" href="#lookup-resources">Lookups</a></li>
             <li><a data-toggle="tab" href="#extensions">Extensions</a></li>
-            <li><a data-toggle="tab" href="#artifact-collection">Artifact Collection</a></li>
+            <li><a data-toggle="tab" href="#artifact-collection">Artifacts</a></li>
             <li>
-                <a data-toggle="tab" href="#user-inputs">User Inputs 
+                <a data-toggle="tab" href="#user-inputs">User inputs
                     <span id="user-inputs-badge" class="badge">0</span>
                 </a>
             </li>
-            <li><a data-toggle="tab" href="#generated-template">Generated Template</a></li>
+            <li>
+                <a data-toggle="tab" href="#generated-template">Generated YAML<span class="generated-yaml-status" aria-hidden="true"></span><span class="sr-only generated-yaml-status-text"></span></a>
+            </li>
         </ul>
+        </nav>
 
         <form id="yamlForm">
             <div class="tab-content">
@@ -225,11 +239,14 @@
                 -->
                 <div id="api-resources" class="tab-pane fade">
                     <fieldset>
-                    <legend>API Resources</legend>
-                    <div class="select-all-container">
-                        <label>
-                            <input type="checkbox" id="selectAllApi" onclick="toggleSelectAll(this, 'api-resources')"> Select All
-                        </label>
+                    <legend class="resource-selector-legend">API Resources</legend>
+                    <div class="resource-selector-heading">
+                        <div class="resource-selector-title" aria-hidden="true">API Resources</div>
+                        <div class="select-all-container">
+                            <label>
+                                <input type="checkbox" id="selectAllApi" onclick="toggleSelectAll(this, 'api-resources')"> Select All
+                            </label>
+                        </div>
                     </div>
                     <div class="multi-column">
                         <label title="Alphamountain Category API" data-content="Query domains at alphamountain." data-toggle="popover" data-trigger="hover" data-placement="bottom">
@@ -348,11 +365,14 @@
                 -->
                 <div id="lookup-resources" class="tab-pane fade">
                     <fieldset>
-                        <legend>Lookup Resources</legend>
-                        <div class="select-all-container">
-                            <label>
-                                <input type="checkbox" id="selectAllLookup" onclick="toggleSelectAll(this, 'lookup-resources')"> Select All
-                            </label>
+                        <legend class="resource-selector-legend">Lookup Resources</legend>
+                        <div class="resource-selector-heading">
+                            <div class="resource-selector-title" aria-hidden="true">Lookup Resources</div>
+                            <div class="select-all-container">
+                                <label>
+                                    <input type="checkbox" id="selectAllLookup" onclick="toggleSelectAll(this, 'lookup-resources')"> Select All
+                                </label>
+                            </div>
                         </div>
                         <div class="multi-column">
                         <label title="AdLoad Mac IOCs" data-content="AdLoad Mac Malware IOCs" data-toggle="popover" data-trigger="hover" data-placement="bottom">
@@ -804,12 +824,14 @@
                             <label for="is_ignore_cert" data-content="Should we ignore SSL verification upon upload?" data-toggle="popover" data-trigger="hover" data-placement="bottom">Ignore Cert Validation:</label>
                             <input type="text" id="is_ignore_cert" name="is_ignore_cert" value="true">
                             <span id="is_ignore_cert_error" class="error-message"></span><br>
-                        </div><br>
+                        </div>
 
                         <!-- Windows Configuration -->
                         <fieldset>
-                            <legend data-toggle="collapse" data-target="#windowsConfig" aria-expanded="false">
-                                <span class="toggle-icon"><i class="fas fa-plus"></i></span> Windows
+                            <legend>
+                                <button type="button" class="artifact-toggle collapsed" data-toggle="collapse" data-target="#windowsConfig" aria-expanded="false" aria-controls="windowsConfig">
+                                    <span class="toggle-icon" aria-hidden="true"><i class="fas fa-plus"></i></span> Windows
+                                </button>
                             </legend>
                             <div id="windowsConfig" class="collapse">
                                 <label title="Windows WEL Streaming" data-content="Steam WEL into the sensor timeline alongside EDR telemetry." data-toggle="popover" data-trigger="hover" data-placement="bottom">
@@ -857,8 +879,10 @@
 
                         <!-- macOS Configuration -->
                         <fieldset>
-                            <legend data-toggle="collapse" data-target="#macConfig" aria-expanded="false">
-                                <span class="toggle-icon"><i class="fas fa-plus"></i></span> macOS
+                            <legend>
+                                <button type="button" class="artifact-toggle collapsed" data-toggle="collapse" data-target="#macConfig" aria-expanded="false" aria-controls="macConfig">
+                                    <span class="toggle-icon" aria-hidden="true"><i class="fas fa-plus"></i></span> macOS
+                                </button>
                             </legend>
                             <div id="macConfig" class="collapse">
                                 <label title="macOS Logs">
@@ -874,8 +898,10 @@
 
                         <!-- Linux Configuration -->
                         <fieldset>
-                            <legend data-toggle="collapse" data-target="#linuxConfig" aria-expanded="false">
-                                <span class="toggle-icon"><i class="fas fa-plus"></i></span> Linux
+                            <legend>
+                                <button type="button" class="artifact-toggle collapsed" data-toggle="collapse" data-target="#linuxConfig" aria-expanded="false" aria-controls="linuxConfig">
+                                    <span class="toggle-icon" aria-hidden="true"><i class="fas fa-plus"></i></span> Linux
+                                </button>
                             </legend>
                             <div id="linuxConfig" class="collapse">
                                 <label title="Linux Logs">
@@ -901,24 +927,41 @@
                 </div>
                 <!-- Generated Template Tab -->
                 <div id="generated-template" class="tab-pane fade">
-                </div>                
-                <!-- YAML Output Block -->
-                <div id="yamlOutputSection" class="template-boundary">
-                    <h2>Infrastructure-as-Code Template:</h2>
-                    <div class="button-container">
-                        <button type="button" onclick="resetForm()">Reset Template</button>
-                        <button id="copyButton" type="button" onclick="copyToClipboard()">Copy to Clipboard</button>
+                    <!-- YAML Output Block -->
+                    <div id="yamlOutputSection" class="template-boundary">
+                        <div class="output-heading">
+                            <div>
+                                <p class="section-kicker">Live preview</p>
+                                <h2>Infrastructure-as-Code template</h2>
+                            </div>
+                            <p>Your selections are reflected here automatically.</p>
+                        </div>
+                        <div id="generated-yaml-input-warning" class="generated-yaml-input-warning" role="note" hidden>
+                            <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                            <p><strong id="generated-yaml-input-warning-count"></strong> Generated YAML may be incomplete.</p>
+                            <button id="review-user-inputs" class="generated-yaml-input-warning-action" type="button">Review user inputs</button>
+                        </div>
+                        <div class="button-container">
+                            <button class="button-secondary" type="button" onclick="resetForm()"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reset template</button>
+                            <button id="copyButton" type="button" onclick="copyToClipboard()"><i class="fa-regular fa-copy" aria-hidden="true"></i> Copy YAML</button>
+                        </div>
+                        <pre id="yamlOutputContainer" class="line-numbers language-yaml"><code id="yamlOutput" class="language-yaml"></code></pre>
                     </div>
-                    <pre id="yamlOutputContainer" class="line-numbers language-yaml"><code id="yamlOutput" class="language-yaml"></code></pre>
                 </div>
             </div>
         </form>
+
+        <footer class="app-footer">
+            Co-maintained by
+            <a href="https://limacharlie.io/" target="_blank" rel="noopener noreferrer">LimaCharlie</a> &amp;
+            <a href="https://digitaldefenseinstitute.com/" target="_blank" rel="noopener noreferrer">Digital Defense Institute</a>.
+        </footer>
     </div>
 
     <!-- Toast container for notifications -->
-    <div id="toast-container" style="position: fixed; top: 10px; right: 10px; z-index: 1000; display: none;">
+    <div id="toast-container">
         <div id="user-input-toast" class="toast">
-            You have selected a feature which requires additional input. Please provide the necessary data under "User Inputs"
+            You have selected a feature which requires additional input. Please provide the necessary data under "User inputs"
         </div>
     </div>
 
