@@ -43,25 +43,47 @@
 
         <!-- To contribute, read the tips in the corresponding sections below -->
 
-        <!-- Navigation Tabs -->
-        <nav class="workflow-nav" aria-label="Generator sections">
-        <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#about">About</a></li>
-            <li><a data-toggle="tab" href="#preconfigured">Templates</a></li>
-            <li><a data-toggle="tab" href="#api-resources">API resources</a></li>
-            <li><a data-toggle="tab" href="#lookup-resources">Lookups</a></li>
-            <li><a data-toggle="tab" href="#extensions">Extensions</a></li>
-            <li><a data-toggle="tab" href="#artifact-collection">Artifacts</a></li>
-            <li>
-                <a data-toggle="tab" href="#user-inputs">User inputs
-                    <span id="user-inputs-badge" class="badge">0</span>
-                </a>
-            </li>
-            <li>
-                <a data-toggle="tab" href="#generated-template">Generated YAML<span class="generated-yaml-status" aria-hidden="true"></span><span class="sr-only generated-yaml-status-text"></span></a>
-            </li>
-        </ul>
-        </nav>
+        <div class="workflow-chrome">
+            <!-- Navigation Tabs -->
+            <nav class="workflow-nav" aria-label="Generator sections">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#about">About</a></li>
+                    <li><a data-toggle="tab" href="#preconfigured">Templates</a></li>
+                    <li><a data-toggle="tab" href="#api-resources">API resources</a></li>
+                    <li><a data-toggle="tab" href="#lookup-resources">Lookups</a></li>
+                    <li><a data-toggle="tab" href="#extensions">Extensions</a></li>
+                    <li><a data-toggle="tab" href="#artifact-collection">Artifacts</a></li>
+                    <li>
+                        <a data-toggle="tab" href="#user-inputs">User inputs
+                            <span id="user-inputs-badge" class="badge">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#generated-template">Generated YAML<span class="generated-yaml-status" aria-hidden="true"></span><span class="sr-only generated-yaml-status-text"></span></a>
+                    </li>
+                </ul>
+            </nav>
+
+            <section id="yaml-peek" class="yaml-peek" aria-label="Live YAML preview">
+                <div class="yaml-peek-bar">
+                    <div class="yaml-peek-status">
+                        <span class="yaml-peek-indicator" aria-hidden="true"></span>
+                        <span id="yaml-peek-summary" aria-live="polite">YAML ready · 1 line</span>
+                    </div>
+                    <button id="yaml-peek-toggle" class="yaml-peek-toggle" type="button" aria-expanded="false" aria-controls="yaml-peek-panel">
+                        <span>Preview YAML</span>
+                        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div id="yaml-peek-panel" class="yaml-peek-panel" hidden>
+                    <div class="yaml-peek-panel-heading">
+                        <span>Live YAML</span>
+                        <button id="yaml-peek-open-full" class="yaml-peek-open-full" type="button">Open full view</button>
+                    </div>
+                    <pre id="yamlPeekContainer" class="language-yaml" aria-label="Generated YAML preview"><code id="yamlPeekOutput" class="language-yaml"></code></pre>
+                </div>
+            </section>
+        </div>
 
         <form id="yamlForm">
             <div class="tab-content">

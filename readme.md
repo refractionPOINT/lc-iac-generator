@@ -63,6 +63,7 @@ Co-maintained by [LimaCharlie](https://limacharlie.io/) and [Digital Defense Ins
 
 ### Generated YAML tab
 
+- Configuration tabs include a collapsible YAML Peek so users can watch the template take shape without leaving the current task.
 - This tab provides a live, syntax-highlighted preview of the generated YAML with aligned line numbers.
 - An update indicator appears when selections made on another tab change the generated YAML and clears when the latest output is viewed or the changes are reverted.
 - A warning identifies outstanding required inputs and links back to the User inputs tab for review.

@@ -116,11 +116,16 @@ a:focus {
     white-space: nowrap;
 }
 
-.workflow-nav {
+.workflow-chrome {
     position: sticky;
     z-index: 20;
     top: 0;
     margin-bottom: -1px;
+}
+
+.workflow-nav {
+    position: relative;
+    z-index: 1;
 }
 
 .nav.nav-tabs {
@@ -168,6 +173,160 @@ a:focus {
     border: 0;
     background: var(--navy-900);
     color: white;
+}
+
+.yaml-peek {
+    position: relative;
+    border: 1px solid var(--line-strong);
+    border-top: 0;
+    background: var(--surface);
+}
+
+.yaml-peek-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 42px;
+    padding: 5px 10px 5px 16px;
+}
+
+.yaml-peek-status {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.yaml-peek-indicator {
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--blue-600);
+    box-shadow: 0 0 0 3px var(--blue-100);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.yaml-peek.is-updated .yaml-peek-indicator {
+    transform: scale(1.25);
+    box-shadow: 0 0 0 5px var(--blue-100);
+}
+
+#yaml-peek-summary {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+button.yaml-peek-toggle,
+button.yaml-peek-open-full {
+    width: auto;
+    min-width: 0;
+    border-color: transparent;
+    background: transparent;
+    color: var(--blue-700) !important;
+    font-size: 13px;
+    box-shadow: none;
+}
+
+button.yaml-peek-toggle {
+    flex: 0 0 auto;
+    gap: 7px;
+    padding: 6px 8px;
+}
+
+button.yaml-peek-toggle:hover,
+button.yaml-peek-toggle:focus,
+button.yaml-peek-open-full:hover,
+button.yaml-peek-open-full:focus {
+    border-color: transparent;
+    background: var(--blue-050);
+    color: var(--navy-900) !important;
+}
+
+.yaml-peek-toggle i {
+    transition: transform 160ms ease;
+}
+
+.yaml-peek-toggle[aria-expanded="true"] i {
+    transform: rotate(180deg);
+}
+
+.yaml-peek-panel {
+    padding: 0 12px 12px;
+    border-top: 1px solid var(--line);
+}
+
+.yaml-peek-panel-heading {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--navy-700);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+button.yaml-peek-open-full {
+    padding: 5px 7px;
+}
+
+pre[class*="language-"]#yamlPeekContainer {
+    max-height: 210px;
+    margin: 0;
+    padding: 13px 15px;
+    overflow: auto;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: var(--navy-950);
+    color: #dce8f5;
+    font: 12px/1.55 "IBM Plex Mono", monospace;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+#yamlPeekContainer code[class*="language-"],
+#yamlPeekContainer .token {
+    text-shadow: none;
+}
+
+#yamlPeekContainer code[class*="language-"] {
+    background: transparent;
+    color: #dce8f5;
+    font-family: inherit;
+    line-height: inherit;
+}
+
+#yamlPeekContainer .token.key,
+#yamlPeekContainer .token.atrule {
+    color: #82c7ff;
+}
+
+#yamlPeekContainer .token.punctuation {
+    color: #9db0c2;
+}
+
+#yamlPeekContainer .token.string,
+#yamlPeekContainer .token.scalar {
+    color: #a8d8b9;
+}
+
+#yamlPeekContainer .token.number,
+#yamlPeekContainer .token.boolean,
+#yamlPeekContainer .token.important {
+    color: #f6c177;
+}
+
+#yamlPeekContainer .token.comment {
+    color: #8da5a0;
+    font-style: italic;
+}
+
+#yamlPeekContainer .token.tag,
+#yamlPeekContainer .token.anchor,
+#yamlPeekContainer .token.alias {
+    color: #d5b5ff;
 }
 
 .badge {
@@ -885,6 +1044,25 @@ pre[class*="language-"]#yamlOutputContainer {
     .nav.nav-tabs {
         padding-bottom: 12px;
         border-radius: var(--radius-md) var(--radius-md) 0 0;
+    }
+
+    .yaml-peek-bar {
+        padding-left: 12px;
+    }
+
+    .yaml-peek-status {
+        font-size: 12px;
+    }
+
+    button.yaml-peek-toggle {
+        padding-right: 4px;
+        font-size: 12px;
+    }
+
+    pre[class*="language-"]#yamlPeekContainer {
+        max-height: 170px;
+        padding: 12px;
+        font-size: 11px;
     }
 
     .nav-tabs > li > a {

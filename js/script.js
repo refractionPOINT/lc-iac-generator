@@ -5,6 +5,9 @@ const version = '1.4.0';
 let currentYAMLState = {}; // Store the current state of the YAML
 let hasRenderedYAML = false;
 let lastViewedYAML = '';
+let hasRenderedYAMLPeek = false;
+let yamlPeekUpdateTimer;
+const YAML_PEEK_STORAGE_KEY = 'lc-iac-yaml-peek-expanded';
 
 function setGeneratedYAMLUpdated(isUpdated) {
     const generatedTab = document.querySelector('a[href="#generated-template"]');
@@ -16,6 +19,107 @@ function setGeneratedYAMLUpdated(isUpdated) {
 
     generatedTab.classList.toggle('has-update', isUpdated);
     statusText.textContent = isUpdated ? ' (updated)' : '';
+}
+
+function getMissingUserInputCount() {
+    return Array.from(document.querySelectorAll('#user-input-fields input'))
+        .filter(input => input.value.trim() === '').length;
+}
+
+function updateWorkflowScrollMargin() {
+    window.requestAnimationFrame(() => {
+        const workflowChrome = document.querySelector('.workflow-chrome');
+        const tabContent = document.querySelector('.tab-content');
+        if (workflowChrome && tabContent) {
+            tabContent.style.scrollMarginTop = `${workflowChrome.offsetHeight + 12}px`;
+        }
+    });
+}
+
+function setYAMLPeekExpanded(isExpanded, persist = true) {
+    const toggle = document.getElementById('yaml-peek-toggle');
+    const panel = document.getElementById('yaml-peek-panel');
+    if (!toggle || !panel) {
+        return;
+    }
+
+    toggle.setAttribute('aria-expanded', String(isExpanded));
+    toggle.querySelector('span').textContent = isExpanded ? 'Hide preview' : 'Preview YAML';
+    panel.hidden = !isExpanded;
+
+    if (persist) {
+        try {
+            sessionStorage.setItem(YAML_PEEK_STORAGE_KEY, String(isExpanded));
+        } catch (error) {
+            // Session storage may be unavailable; the preview still works for this page load.
+        }
+    }
+
+    updateWorkflowScrollMargin();
+}
+
+function syncYAMLPeekVisibility(tabHash) {
+    const yamlPeek = document.getElementById('yaml-peek');
+    if (!yamlPeek) {
+        return;
+    }
+    yamlPeek.hidden = ['#about', '#generated-template'].includes(tabHash);
+    updateWorkflowScrollMargin();
+}
+
+function updateYAMLPeek(yamlOutput) {
+    const yamlPeek = document.getElementById('yaml-peek');
+    const codeElement = document.getElementById('yamlPeekOutput');
+    const summary = document.getElementById('yaml-peek-summary');
+    if (!yamlPeek || !codeElement || !summary) {
+        return;
+    }
+
+    const normalizedYAML = yamlOutput.trimEnd();
+    const lineCount = normalizedYAML ? normalizedYAML.split('\n').length : 0;
+    const missingInputCount = getMissingUserInputCount();
+    const lineLabel = `${lineCount} line${lineCount === 1 ? '' : 's'}`;
+    const inputLabel = missingInputCount > 0
+        ? ` · ${missingInputCount} input${missingInputCount === 1 ? '' : 's'} needed`
+        : '';
+
+    summary.textContent = `${hasRenderedYAMLPeek ? 'YAML updated' : 'YAML ready'} · ${lineLabel}${inputLabel}`;
+    codeElement.textContent = yamlOutput;
+    Prism.highlightElement(codeElement);
+
+    if (hasRenderedYAMLPeek) {
+        yamlPeek.classList.remove('is-updated');
+        void yamlPeek.offsetWidth;
+        yamlPeek.classList.add('is-updated');
+        window.clearTimeout(yamlPeekUpdateTimer);
+        yamlPeekUpdateTimer = window.setTimeout(() => yamlPeek.classList.remove('is-updated'), 500);
+    }
+    hasRenderedYAMLPeek = true;
+}
+
+function initializeYAMLPeek() {
+    const toggle = document.getElementById('yaml-peek-toggle');
+    const openFullView = document.getElementById('yaml-peek-open-full');
+    if (!toggle || !openFullView) {
+        return;
+    }
+
+    let shouldExpand = false;
+    try {
+        shouldExpand = sessionStorage.getItem(YAML_PEEK_STORAGE_KEY) === 'true';
+    } catch (error) {
+        // Use the collapsed default when session storage is unavailable.
+    }
+
+    setYAMLPeekExpanded(shouldExpand, false);
+    toggle.addEventListener('click', () => {
+        setYAMLPeekExpanded(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+    openFullView.addEventListener('click', () => {
+        const generatedTab = document.querySelector('.workflow-nav a[href="#generated-template"]');
+        $(generatedTab).tab('show');
+        generatedTab.focus();
+    });
 }
 
 //// main function for generating YAML output
@@ -187,6 +291,7 @@ async function generateYAML() {
     }
 
     Prism.highlightElement(codeElement);
+    updateYAMLPeek(yamlOutput);
 }
 //// strip out any keys without values
 function removeEmptyKeys(yamlObject) {
@@ -989,6 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
         $(userInputsTab).tab('show');
         userInputsTab.focus();
     });
+    initializeYAMLPeek();
     initializeAccessiblePopovers();
     populateTemplateDescriptions();
     handleCollapsingSections();
@@ -1002,11 +1108,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTab = urlParams.get('tab');
     if (savedTab) {
         const savedTabLink = document.querySelector(`a[href="#${savedTab}"]`);
-        $(savedTabLink).tab('show');
-        revealActiveTab(savedTabLink);
-        if (savedTab === 'generated-template') {
-            refreshGeneratedYAMLView();
+        if (savedTabLink) {
+            $(savedTabLink).tab('show');
+            revealActiveTab(savedTabLink);
+            syncYAMLPeekVisibility(savedTabLink.hash);
+            if (savedTab === 'generated-template') {
+                refreshGeneratedYAMLView();
+            }
+        } else {
+            syncYAMLPeekVisibility(document.querySelector('.workflow-nav li.active a').hash);
         }
+    } else {
+        syncYAMLPeekVisibility(document.querySelector('.workflow-nav li.active a').hash);
     }
 
     // 2) Whenever a new tab is shown, update the URL
@@ -1014,6 +1127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         $('.popover-anchor').popover('hide');
         setActiveTabInURL(e.target.hash);
         revealActiveTab(e.target);
+        syncYAMLPeekVisibility(e.target.hash);
         window.requestAnimationFrame(() => {
             document.querySelector('.tab-content').scrollIntoView({ block: 'nearest' });
         });
