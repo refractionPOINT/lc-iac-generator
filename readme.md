@@ -10,6 +10,8 @@ App URL: https://iac.limacharlie.io/
 
 Repo URL: https://github.com/refractionPOINT/lc-iac-generator/
 
+Co-maintained by [LimaCharlie](https://limacharlie.io/) and [Digital Defense Institute](https://digitaldefenseinstitute.com/).
+
 ### Disclaimer / Important Considerations
 
 - The LimaCharlie IaC Generator is designed to inspire and demonstrate the possibilities of Infrastructure-as-Code configurations for cybersecurity platforms. While it provides a range of templates and options for creating detection and response rules, it is not intended to replace a comprehensive and thorough collection of detection rules. Users should conduct their own assessments and testing to ensure that any configurations meet their specific security needs and standards. Always combine these configurations with a robust security strategy and additional custom rules tailored to your environment.
@@ -20,44 +22,52 @@ Repo URL: https://github.com/refractionPOINT/lc-iac-generator/
 
 ## UI Components
 
-### Preconfigured Templates Tab
+### Templates tab
 
 - This tab provides a list of predefined templates for various use cases. Users can select these templates by checking the corresponding checkboxes.
 - The templates are loaded from static YAML files in `./templates` -- you may optionally browse to this location and use the original version of the template.
 - Each template includes a description that is shown on hover, this description is imported from the template file itself so they are self-describing.
 
-### API Resources Tab
+### API resources tab
 
 - This tab allows users to select from a set of API resources that can be included in the YAML template.
 - Users can select individual API resources or use the "Select All" checkbox to select all available APIs at once.
-- Some API resources support (or even expect) a user-provided API key. If you enable one of these options, a new input field will appear on the "User Inputs" tab (see below).
+- Some API resources support (or even expect) a user-provided API key. If you enable one of these options, a new input field will appear on the "User inputs" tab (see below).
 
-### Lookup Resources Tab
+### Lookups tab
 
 - This tab lists various lookup resources that can be included in the YAML configuration.
 - Users can select lookup resources individually or use the "Select All" checkbox to select all available lookups.
 - Enabling these lookups does not immediately put them to use. You must also leverage D&R rules which perform the lookup tasks. Consider the "Use Lookups" preconfigured template to see how this works.
 
-### Extensions Tab
+### Extensions tab
 
 - The Extensions tab provides checkboxes for selecting different extensions to include in the configuration.
 - Users can also choose sub-categories like Rulesets.
     - Note, the "Soteria" rulesets incur additional cost. Read about these rulesets [here](https://docs.limacharlie.io/docs/detection-and-response-managed-rulesets-soteria-rules).
-- Some extensions support (or even expect) a user-provided API key. If you enable one of these options, a new input field will appear on the "User Inputs" tab (see below).
+- Some extensions support (or even expect) a user-provided API key. If you enable one of these options, a new input field will appear on the "User inputs" tab (see below).
 
 
-### Artifact Collection Tab
+### Artifacts tab
 
 - This tab allows users to configure artifact collection settings for different operating systems using a list of predefined artifact patterns.
 - Users can specify settings like `Days Retention`, `Delete After Upload`, and `Ignore Cert Validation`.
 - For each OS, users can select specific log files or streams to include in the configuration.
 
-### User Inputs Tab
+### User inputs tab
 
-- The User Inputs tab dynamically displays input fields based on the options selected in other tabs (API Resources, Extensions, etc.).
+- The User inputs tab dynamically displays input fields based on the options selected in other tabs (API resources, Extensions, etc.).
 - When a user selects an option that requires additional data, such as an API key or integration key, the necessary input fields are automatically shown in this tab.
 - Each input field is labeled with a description indicating what data is required. For example, selecting the "VirusTotal" API will prompt for a "VirusTotal API Key".
-- The badge on the "User Inputs" tab indicates the number of required fields that are currently empty, drawing attention to inputs that still need to be filled in.
+- The badge on the "User inputs" tab indicates the number of required fields that are currently empty, drawing attention to inputs that still need to be filled in.
+
+### Generated YAML tab
+
+- Configuration tabs include a collapsible YAML Peek so users can watch the template take shape without leaving the current task.
+- This tab provides a live, syntax-highlighted preview of the generated YAML with aligned line numbers.
+- An update indicator appears when selections made on another tab change the generated YAML and clears when the latest output is viewed or the changes are reverted.
+- A warning identifies outstanding required inputs and links back to the User inputs tab for review.
+- Use the available controls to copy the generated YAML or reset the generator to its initial state.
 
 ## Conclusion
 
@@ -73,7 +83,7 @@ We welcome contributions to the LimaCharlie IaC Generator! Whether you have idea
 
 2. **Clone the Forked Repository**: Clone your forked repository to your local machine to start working on your changes.
     ```bash
-    git clone https://github.com/refractionPOINT/limacharlie-iac-generator.git
+    git clone https://github.com/refractionPOINT/lc-iac-generator.git
     ```
 
 3. **Create a New Branch**: Create a new branch for your changes. Use a descriptive name that explains what you are working on (e.g., `add-new-template`, `fix-bug-in-yaml-output`).

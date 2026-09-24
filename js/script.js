@@ -1,10 +1,131 @@
 // app versioning - https://semver.org/
-const version = '1.3.0';
+const version = '1.4.0';
 
 // begin yaml generation
 let currentYAMLState = {}; // Store the current state of the YAML
+let hasRenderedYAML = false;
+let lastViewedYAML = '';
+let hasRenderedYAMLPeek = false;
+let yamlPeekUpdateTimer;
+const YAML_PEEK_STORAGE_KEY = 'lc-iac-yaml-peek-expanded';
+
+function setGeneratedYAMLUpdated(isUpdated) {
+    const generatedTab = document.querySelector('a[href="#generated-template"]');
+    const statusText = generatedTab && generatedTab.querySelector('.generated-yaml-status-text');
+
+    if (!generatedTab || !statusText) {
+        return;
+    }
+
+    generatedTab.classList.toggle('has-update', isUpdated);
+    statusText.textContent = isUpdated ? ' (updated)' : '';
+}
+
+function getMissingUserInputCount() {
+    return Array.from(document.querySelectorAll('#user-input-fields input'))
+        .filter(input => input.value.trim() === '').length;
+}
+
+function updateWorkflowScrollMargin() {
+    window.requestAnimationFrame(() => {
+        const workflowChrome = document.querySelector('.workflow-chrome');
+        const tabContent = document.querySelector('.tab-content');
+        if (workflowChrome && tabContent) {
+            tabContent.style.scrollMarginTop = `${workflowChrome.offsetHeight + 12}px`;
+        }
+    });
+}
+
+function setYAMLPeekExpanded(isExpanded, persist = true) {
+    const toggle = document.getElementById('yaml-peek-toggle');
+    const panel = document.getElementById('yaml-peek-panel');
+    if (!toggle || !panel) {
+        return;
+    }
+
+    toggle.setAttribute('aria-expanded', String(isExpanded));
+    toggle.querySelector('span').textContent = isExpanded ? 'Hide preview' : 'Preview YAML';
+    panel.hidden = !isExpanded;
+
+    if (persist) {
+        try {
+            sessionStorage.setItem(YAML_PEEK_STORAGE_KEY, String(isExpanded));
+        } catch (error) {
+            // Session storage may be unavailable; the preview still works for this page load.
+        }
+    }
+
+    updateWorkflowScrollMargin();
+}
+
+function syncYAMLPeekVisibility(tabHash) {
+    const yamlPeek = document.getElementById('yaml-peek');
+    if (!yamlPeek) {
+        return;
+    }
+    yamlPeek.hidden = ['#about', '#generated-template'].includes(tabHash);
+    updateWorkflowScrollMargin();
+}
+
+function updateYAMLPeek(yamlOutput) {
+    const yamlPeek = document.getElementById('yaml-peek');
+    const codeElement = document.getElementById('yamlPeekOutput');
+    const summary = document.getElementById('yaml-peek-summary');
+    if (!yamlPeek || !codeElement || !summary) {
+        return;
+    }
+
+    const normalizedYAML = yamlOutput.trimEnd();
+    const lineCount = normalizedYAML ? normalizedYAML.split('\n').length : 0;
+    const missingInputCount = getMissingUserInputCount();
+    const lineLabel = `${lineCount} line${lineCount === 1 ? '' : 's'}`;
+    const inputLabel = missingInputCount > 0
+        ? ` · ${missingInputCount} input${missingInputCount === 1 ? '' : 's'} needed`
+        : '';
+
+    summary.textContent = `${hasRenderedYAMLPeek ? 'YAML updated' : 'YAML ready'} · ${lineLabel}${inputLabel}`;
+    codeElement.textContent = yamlOutput;
+    Prism.highlightElement(codeElement);
+
+    if (hasRenderedYAMLPeek) {
+        yamlPeek.classList.remove('is-updated');
+        void yamlPeek.offsetWidth;
+        yamlPeek.classList.add('is-updated');
+        window.clearTimeout(yamlPeekUpdateTimer);
+        yamlPeekUpdateTimer = window.setTimeout(() => yamlPeek.classList.remove('is-updated'), 500);
+    }
+    hasRenderedYAMLPeek = true;
+}
+
+function initializeYAMLPeek() {
+    const toggle = document.getElementById('yaml-peek-toggle');
+    const openFullView = document.getElementById('yaml-peek-open-full');
+    if (!toggle || !openFullView) {
+        return;
+    }
+
+    let shouldExpand = false;
+    try {
+        shouldExpand = sessionStorage.getItem(YAML_PEEK_STORAGE_KEY) === 'true';
+    } catch (error) {
+        // Use the collapsed default when session storage is unavailable.
+    }
+
+    setYAMLPeekExpanded(shouldExpand, false);
+    toggle.addEventListener('click', () => {
+        setYAMLPeekExpanded(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+    openFullView.addEventListener('click', () => {
+        const generatedTab = document.querySelector('.workflow-nav a[href="#generated-template"]');
+        $(generatedTab).tab('show');
+        generatedTab.focus();
+    });
+}
+
 //// main function for generating YAML output
 async function generateYAML() {
+    updateSelectAllControls();
+
     if (!validateInput()) {
         return;
     }
@@ -155,8 +276,22 @@ async function generateYAML() {
 
     const codeElement = document.getElementById('yamlOutput');
     codeElement.textContent = yamlOutput;
-    
+
+    const generatedTab = document.querySelector('a[href="#generated-template"]');
+    const generatedTabIsActive = generatedTab && generatedTab.parentElement.classList.contains('active');
+    if (!hasRenderedYAML) {
+        lastViewedYAML = yamlOutput;
+        hasRenderedYAML = true;
+    }
+    if (generatedTabIsActive) {
+        lastViewedYAML = yamlOutput;
+        setGeneratedYAMLUpdated(false);
+    } else {
+        setGeneratedYAMLUpdated(yamlOutput !== lastViewedYAML);
+    }
+
     Prism.highlightElement(codeElement);
+    updateYAMLPeek(yamlOutput);
 }
 //// strip out any keys without values
 function removeEmptyKeys(yamlObject) {
@@ -444,12 +579,12 @@ function addUserInputField(id, labelText, placeholderText, value = '') {
     const debouncedGenerateYAML = debounce(() => {
         userInputValues[id] = inputField.value;
         generateYAML();
-        updateUserInputsBadge(); // Update badge count on input change
     }, 500); // 500 milliseconds debounce delay
 
     // Attach the debounced function and highlight check to the input event
     inputField.addEventListener('input', function() {
         applyHighlightIfEmpty(inputField); // Check if the input should be highlighted
+        updateUserInputsBadge(); // Keep incomplete-state cues in sync immediately
         debouncedGenerateYAML(); // Trigger YAML generation with debounce
     });
 }
@@ -498,14 +633,20 @@ function updateUserInputsBadge() {
     });
 
     const badge = document.getElementById('user-inputs-badge');
+    const warning = document.getElementById('generated-yaml-input-warning');
+    const warningCount = document.getElementById('generated-yaml-input-warning-count');
 
     if (emptyCount > 0) {
         badge.textContent = emptyCount;
         badge.style.display = 'inline'; // Show badge
         badge.classList.add('attention-badge'); // Add attention-grabbing styles
+        warningCount.textContent = `${emptyCount} required input${emptyCount === 1 ? ' is' : 's are'} missing.`;
+        warning.hidden = false;
     } else {
         badge.style.display = 'none'; // Hide badge
         badge.classList.remove('attention-badge'); // Remove styles when not needed
+        warning.hidden = true;
+        warningCount.textContent = '';
     }
 }
 //// Function to show a toast notification
@@ -609,6 +750,7 @@ function initializeListeners() {
                 });
             } else {
                 input.addEventListener('change', () => {
+                    updateSelectAllControls();
                     renderUserInputFields();
                     generateYAML();
                     updateURLWithCheckboxState();
@@ -723,33 +865,128 @@ function toggleSelectAll(selectAllCheckbox, tabId) {
     checkboxes.forEach((checkbox) => {
         checkbox.checked = selectAllCheckbox.checked;
     });
+}
 
-    generateYAML();
+function updateSelectAllControls() {
+    [
+        { controlId: 'selectAllApi', tabId: 'api-resources' },
+        { controlId: 'selectAllLookup', tabId: 'lookup-resources' }
+    ].forEach(({ controlId, tabId }) => {
+        const selectAll = document.getElementById(controlId);
+        const checkboxes = Array.from(document.querySelectorAll(`#${tabId} .multi-column input[type="checkbox"]`));
+        const checkedCount = checkboxes.filter(checkbox => checkbox.checked).length;
+
+        selectAll.checked = checkboxes.length > 0 && checkedCount === checkboxes.length;
+        selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+    });
 }
 function handleCollapsingSections() {
-    const collapsibleLegends = document.querySelectorAll('legend[data-toggle="collapse"]');
+    const collapseToggles = document.querySelectorAll('.artifact-toggle[data-toggle="collapse"]');
 
-    collapsibleLegends.forEach(legend => {
-        const icon = legend.querySelector('.toggle-icon i');
+    collapseToggles.forEach(toggle => {
+        const icon = toggle.querySelector('.toggle-icon i');
+        const target = document.querySelector(toggle.getAttribute('data-target'));
 
-        if (legend.getAttribute('aria-expanded') === 'true') {
-            icon.classList.replace('fa-plus', 'fa-minus');
-        } else {
-            icon.classList.replace('fa-minus', 'fa-plus');
+        const updateIcon = (isExpanded) => {
+            icon.classList.toggle('fa-plus', !isExpanded);
+            icon.classList.toggle('fa-minus', isExpanded);
+        };
+
+        updateIcon(toggle.getAttribute('aria-expanded') === 'true');
+
+        if (target) {
+            $(target).on('shown.bs.collapse', () => updateIcon(true));
+            $(target).on('hidden.bs.collapse', () => updateIcon(false));
+        }
+    });
+}
+
+function initializeAccessiblePopovers() {
+    const descriptionContainer = document.createElement('div');
+    descriptionContainer.className = 'sr-only';
+    descriptionContainer.id = 'option-descriptions';
+    descriptionContainer.hidden = true;
+    document.body.appendChild(descriptionContainer);
+
+    const descriptionByLabel = new Map();
+
+    document.querySelectorAll('[data-toggle="popover"]').forEach((label, index) => {
+        const control = label.control || label.querySelector('input, select, textarea, button');
+        if (!control) {
+            return;
         }
 
-        legend.addEventListener('click', function() {
-            const isExpanded = legend.getAttribute('aria-expanded') === 'true';
-            if (isExpanded) {
-                icon.classList.replace('fa-minus', 'fa-plus');
-            } else {
-                icon.classList.replace('fa-plus', 'fa-minus');
+        const $popoverAnchor = $(label);
+        const popoverTitle = label.getAttribute('title') || '';
+        const isTextEntry = control.matches('input[type="text"], textarea');
+        const description = document.createElement('span');
+        const descriptionId = `option-description-${index + 1}`;
+        const existingDescription = control.getAttribute('aria-describedby');
+        const persistentDescription = [existingDescription, descriptionId].filter(Boolean).join(' ');
+
+        description.id = descriptionId;
+        description.textContent = label.getAttribute('data-content') || '';
+        descriptionContainer.appendChild(description);
+        descriptionByLabel.set(label, description);
+        label.removeAttribute('title');
+        control.setAttribute('aria-describedby', persistentDescription);
+        label.classList.add('popover-anchor');
+
+        $popoverAnchor.popover({
+            container: 'body',
+            content: () => label.getAttribute('data-content') || '',
+            placement: label.getAttribute('data-placement') || 'bottom',
+            title: popoverTitle,
+            trigger: 'manual'
+        });
+        $popoverAnchor.on('shown.bs.popover hidden.bs.popover', () => {
+            control.setAttribute('aria-describedby', persistentDescription);
+        });
+
+        label.addEventListener('mouseenter', () => {
+            $popoverAnchor.popover('show');
+        });
+        label.addEventListener('mouseleave', () => {
+            if (isTextEntry || !control.matches(':focus-visible')) {
+                $popoverAnchor.popover('hide');
+            }
+        });
+        control.addEventListener('focus', () => {
+            if (!isTextEntry && control.matches(':focus-visible')) {
+                $popoverAnchor.popover('show');
+            }
+        });
+        control.addEventListener('blur', () => {
+            $popoverAnchor.popover('hide');
+        });
+        control.addEventListener('change', () => {
+            $popoverAnchor.popover('hide');
+        });
+        control.addEventListener('input', () => {
+            $popoverAnchor.popover('hide');
+        });
+        control.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                $popoverAnchor.popover('hide');
             }
         });
     });
+
+    const descriptionObserver = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            const description = descriptionByLabel.get(mutation.target);
+            if (description) {
+                description.textContent = mutation.target.getAttribute('data-content') || '';
+            }
+        });
+    });
+
+    document.querySelectorAll('[data-toggle="popover"]').forEach(label => {
+        descriptionObserver.observe(label, { attributes: true, attributeFilter: ['data-content'] });
+    });
 }
 function loadReadme() {
-    fetch('./readme.md')
+    fetch(`./readme.md?v=${version}`)
         .then(response => response.text())
         .then(markdown => {
             const aboutContent = document.getElementById('about-content');
@@ -803,7 +1040,7 @@ function updateURLWithCheckboxState() {
     // Add each checked checkbox ID into the parameters
     document.querySelectorAll('input[type="checkbox"]:checked').forEach((checkbox) => {
         const id = checkbox.getAttribute('id');
-        if (id) {
+        if (id && !id.startsWith('selectAll')) {
             // Store as key (like ?myCheckbox&someOtherCheckbox)
             // Using set('id','') produces ?id=, so an alternative is appended formatting
             urlParams.set(id, ''); 
@@ -825,6 +1062,7 @@ function applyCheckboxStateFromURL() {
         const id = checkbox.getAttribute('id');
         checkbox.checked = id && enabledIds.includes(id);
     });
+    updateSelectAllControls();
     renderUserInputFields();
 }
 
@@ -836,10 +1074,28 @@ function setActiveTabInURL(tabId) {
     history.replaceState(null, '', newURL);
 }
 
+function revealActiveTab(tabLink) {
+    if (tabLink) {
+        tabLink.scrollIntoView({ block: 'nearest', inline: 'center' });
+    }
+}
+
+function refreshGeneratedYAMLView() {
+    window.requestAnimationFrame(() => {
+        Prism.highlightElement(document.getElementById('yamlOutput'));
+    });
+}
+
 // initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.app-version').textContent = `Version: ${version}`;
-    $('[data-toggle="popover"]').popover();
+    document.getElementById('review-user-inputs').addEventListener('click', () => {
+        const userInputsTab = document.querySelector('.workflow-nav a[href="#user-inputs"]');
+        $(userInputsTab).tab('show');
+        userInputsTab.focus();
+    });
+    initializeYAMLPeek();
+    initializeAccessiblePopovers();
     populateTemplateDescriptions();
     handleCollapsingSections();
     updateUserInputsBadge();
@@ -851,17 +1107,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const savedTab = urlParams.get('tab');
     if (savedTab) {
-        $(`a[href="#${savedTab}"]`).tab('show');
+        const savedTabLink = document.querySelector(`a[href="#${savedTab}"]`);
+        if (savedTabLink) {
+            $(savedTabLink).tab('show');
+            revealActiveTab(savedTabLink);
+            syncYAMLPeekVisibility(savedTabLink.hash);
+            if (savedTab === 'generated-template') {
+                refreshGeneratedYAMLView();
+            }
+        } else {
+            syncYAMLPeekVisibility(document.querySelector('.workflow-nav li.active a').hash);
+        }
+    } else {
+        syncYAMLPeekVisibility(document.querySelector('.workflow-nav li.active a').hash);
     }
 
     // 2) Whenever a new tab is shown, update the URL
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        $('.popover-anchor').popover('hide');
         setActiveTabInURL(e.target.hash);
+        revealActiveTab(e.target);
+        syncYAMLPeekVisibility(e.target.hash);
+        window.requestAnimationFrame(() => {
+            document.querySelector('.tab-content').scrollIntoView({ block: 'nearest' });
+        });
+        if (e.target.hash === '#generated-template') {
+            lastViewedYAML = document.getElementById('yamlOutput').textContent;
+            setGeneratedYAMLUpdated(false);
+            refreshGeneratedYAMLView();
+        }
         if (e.target.hash === '#about') {
             loadReadme();
-            document.getElementById('yamlOutputSection').style.display = 'none';
-        } else {
-            document.getElementById('yamlOutputSection').style.display = 'block';
         }
     });
 
@@ -869,6 +1145,5 @@ document.addEventListener('DOMContentLoaded', () => {
     const aboutTab = document.querySelector('li.active a[href="#about"]');
     if (aboutTab) {
         loadReadme();
-        document.getElementById('yamlOutputSection').style.display = 'none'; // Hide YAML Output Block
     }
 });
